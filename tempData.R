@@ -45,19 +45,7 @@ TempPlot <- ggplot(data = Temp_Time,
 
 TempPlot
 
-
-TempPlot <- ggplot(data = Temp_Time,
-                   aes(x = dateTime,
-                       y = Temp_C,
-                       fill = Bucket_ID)) +
-  geom_line() +
-  geom_hline(aes(yintercept = 22,
-                 colour = "#CC0000")) +
-  geom_hline(aes(yintercept = 17,
-                 colour = "#660066")) +
-  geom_hline(aes(yintercept = 12,
-                 colour = "#0000CC")) +
-  labs(x = "Date",
-       y = "Temperature (ºC)",
-       colour = "Treatment Temperature") +
-  theme_classic()
+ggsave("temp_plot.png", 
+       TempPlot,
+       device = "png",
+       path = here("images"))
