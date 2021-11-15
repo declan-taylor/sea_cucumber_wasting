@@ -48,4 +48,4 @@ TempPlot
 ggsave("temp_plot.png", 
        TempPlot,
        device = "png",
-       path = here("images"))
+       path = here("figures"))
