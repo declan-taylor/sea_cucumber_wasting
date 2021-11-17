@@ -25,13 +25,15 @@ Activity_plot =
   geom_segment(aes(x = 4.5, y = -1, xend = 4.5, yend = 15), size=1, linetype=2)+
   geom_segment(aes(x = 1.6, y = 13.7, xend = 4.4, yend = 13.7), size=1,arrow = arrow(length = unit(0.2, "cm")))+
   scale_y_continuous(expand=c(0,0), limits = c(-1,15))+
-  scale_fill_manual(labels=c("Control (12°C)","Room (17°C)","Heat (22°C)"), values=c("Gold", "Orange","Red"))+
+  scale_fill_manual(labels=c("Control (12?C)","Room (17?C)","Heat (22?C)"), values=c("Gold", "Orange","Red"))+
   ylab("Activity Scores")+xlab("Date")+
   theme_bw()+
   theme(panel.grid=element_blank())
 Activity_plot
 
-ggsave("figures/ActivityScores.jpg",plot=Activity_plot, width=6, height=4)
+ggsave("figures/ActivityScores.jpg",plot=Activity_plot, width=7, height=4)
 
 
+hist(Act$Activity_Score,col="firebrick")
+shapiro.test(Act$Activity_Score)
 

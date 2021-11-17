@@ -18,11 +18,13 @@ Lesions_plot =
   scale_x_discrete(breaks=c("2021-11-13","2021-11-14","2021-11-15"),
                    labels=c("Nov 13","Nov14", "Nov15"))+
   scale_y_continuous(expand=c(0,0), limits = c(-1,15))+
-  scale_fill_manual(labels=c("Control (12°C)","Room (17°C)","Heat (22°C)"), values=c("Gold", "Orange","Red"))+
+  scale_fill_manual(labels=c("Control (12?C)","Room (17?C)","Heat (22?C)"), values=c("Gold", "Orange","Red"))+
   ylab("Number of Lesions")+xlab("Date")+
   theme_bw()+
   theme(panel.grid=element_blank())
 Lesions_plot
 
-ggsave("figures/ActivityScores.jpg",plot=Activity_plot, width=6, height=4)
+ggsave("figures/lesions.jpg",plot=Lesions_plot, width=6, height=4)
 
+hist(lesion$Number_lesions, col="orange")
+shapiro.test(lesion$Number_lesions)

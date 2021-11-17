@@ -31,13 +31,13 @@ TempPlot <- ggplot(data = Temp_Time,
   #                             height=unit(1,"npc"))) +
   geom_line() +
   geom_hline(aes(yintercept = 22,
-             colour = "22ÂºC")) +
+             colour = "22ºC")) +
   geom_hline(aes(yintercept = 17,
-             colour = "17ÂºC")) +
+             colour = "17ºC")) +
   geom_hline(aes(yintercept = 12,
-             colour = "12ÂºC")) +
+             colour = "12ºC")) +
   labs(x = "Date",
-       y = "Temperature (ÂºC)",
+       y = "Temperature (ºC)",
        colour = "Treatment Temperature") +
   scale_colour_manual(values = c("#0000CC", "#660066", "#CC0000")) +
     guides(colour = guide_legend(reverse = TRUE)) +
@@ -48,4 +48,4 @@ TempPlot
 ggsave("temp_plot.png", 
        TempPlot,
        device = "png",
-       path = here("figures"))
+       path = here("figures"), width=7, height=4)
