@@ -32,11 +32,11 @@ SelectedData <- DailyLog[35:1000000,] %>%
          spawn = Spawn) %>%
   # Select only rows with a value for at least one of the binary variables
   filter(FALSE == is.na(alive) |
-         FALSE == is.na(death_time) |
-         FALSE == is.na(poop) |
-         FALSE == is.na(evisceration) |
-         FALSE == is.na(resp_evisc) |
-         FALSE == is.na(spawn)) %>%
+           FALSE == is.na(death_time) |
+           FALSE == is.na(poop) |
+           FALSE == is.na(evisceration) |
+           FALSE == is.na(resp_evisc) |
+           FALSE == is.na(spawn)) %>%
   mutate(combinedID = paste(bucketID, cukeID))
 
 DeathData <- SelectedData %>%
@@ -94,12 +94,12 @@ for(i in BinaryVariables) {
 
 FinalBinary <- SelectedData %>%
   select(date_time,
-       sea_table,
-       table_position,
-       bucketID,
-       cukeID,
-       combinedID,
-       treatment) %>%
+         sea_table,
+         table_position,
+         bucketID,
+         cukeID,
+         combinedID,
+         treatment) %>%
   distinct(combinedID, .keep_all = TRUE)
 
 FinalBinary <- left_join(FinalBinary, BinaryData, by = "combinedID")
@@ -110,7 +110,3 @@ FinalBinary$resp_evisc <- FinalBinary$resp_evisc %>% replace_na(0)
 FinalBinary$poop <- FinalBinary$poop %>% replace_na(0)
 FinalBinary$sperm_spawn <- FinalBinary$sperm_spawn %>% replace_na(0)
 FinalBinary$egg_spawn <- FinalBinary$egg_spawn %>% replace_na(0)
-
-  
-  
-ggplot()
