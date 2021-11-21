@@ -5,23 +5,23 @@ library(performance)
 library(gamlss)
 library(tidyverse)
 
-# Import Data
-DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
-  # Format `Date` column to POSIX standard
-  mutate("Date" = dmy(Date)) %>%
-  mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
-  mutate(dateTime = ymd_hms(dateTime)) %>%
-  # Make `Sea_Table` and `Bucket_ID` factorial data.
-  mutate(Sea_Table = as.factor(Sea_Table),
-         Bucket_ID = as.factor(Bucket_ID))
-
 # This function generates our individual level data with death_time, spawning, 
 # evisceration, and poop data. The function exists so the dataframe can be 
 # easily made in one click.
-create_individualData <- function(master_dataframe){
+create_individualData <- function(datafile){
+  # Import Data
+  DailyLog <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+    # Format `Date` column to POSIX standard
+    mutate("Date" = dmy(Date)) %>%
+    mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
+    mutate(dateTime = ymd_hms(dateTime)) %>%
+    # Make `Sea_Table` and `Bucket_ID` factorial data.
+    mutate(Sea_Table = as.factor(Sea_Table),
+           Bucket_ID = as.factor(Bucket_ID))
+  
   # Generate data frame to hold just the binary variables. Upper limit of 
   # dataframe is intentionally too big (I'm just removing the top 35 rows).
-  SelectedData <- master_dataframe %>%
+  SelectedData <- DailyLog %>%
     # remove the first 34 lines of data frame (pre-experiment data).
     tail(-34) %>%
     # Select and rename variables
@@ -105,10 +105,7 @@ create_individualData <- function(master_dataframe){
       replace_na()
   }
 
-  IndividualData <<- IndividualData  
-}
-  
-  IndividualData$death_time <- IndividualData$death_time %>% replace_na("0")
+  #IndividualData$death_time <- IndividualData$death_time %>% replace_na("0")
   IndividualData$evisceration <- IndividualData$evisceration %>% 
     replace_na(0) %>%
     as.numeric(IndividualData$evisceration)
@@ -121,6 +118,58 @@ create_individualData <- function(master_dataframe){
   IndividualData$spawn <- IndividualData$spawn %>% 
     replace_na(0) %>%
     as.numeric(IndividualData$spawn)
+  
+  IndividualData <<- IndividualData  
+}
+  
+add_stressData <- function(datafile){
+  # Import data
+  StressData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+    # Format `Date` column to POSIX standard
+    mutate("Date" = dmy(Date)) %>%
+    mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
+    mutate(dateTime = ymd_hms(dateTime)) %>%
+    # Make `Sea_Table` and `Bucket_ID` factorial data.
+    mutate(Sea_Table = as.factor(Sea_Table),
+           Bucket_ID = as.factor(Bucket_ID)) %>%
+    select(date = Date,
+           time = Time,
+           date_time = dateTime,
+           sea_table = Sea_Table,
+           table_position = Table_Position,
+           bucketID = Bucket_ID,
+           cukeID = Cuke_ID,
+           treatment = Treatment,
+           activity = Activity_Score,
+           squeeze = Squeeze_score,
+           droop = Droop_score) %>%
+    mutate(combinedID = paste(bucketID, cukeID))
+  
+  # Generate initial data values for activiyt, droop, and squeeze based on the 
+  # readings taken on the first day of the experiment.
+  initial_stress_values <- StressData %>%
+   # filter(date_time == "2021-11-09 09:40:00") 
+    mutate(date = as.character(date),
+           time = as.character(time)) %>%
+    filter(date == "2021-11-09" & 
+           time == "09:40:00") %>%
+    select(combinedID,
+           in_activity = activity,
+           in_droop = droop,
+           in_squeeze = squeeze)
+  
+  IndividualData <<- full_join(IndividualData, initial_stress_values, by = "combinedID")
+}
 
+add_weightData <- function(datafile){
+  WeightData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+    mutate(combinedID = paste(Bucket_ID, Cuke_ID)) %>%
+    select(weight_g = Weight_2,
+           combinedID)
+  
+  IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
+}
 
-create_individualData(DailyLog)
+create_individualData("DailyLog.csv")
+add_stressData("BehaviourData.csv")
+add_weightData("SizeData.csv")
