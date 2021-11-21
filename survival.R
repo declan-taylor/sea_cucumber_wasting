@@ -35,17 +35,27 @@ ggsave("figures/survival.jpg",plot=surv_plot, width=5, height=4)
 
 
   
-### survival model 
+### survival model - logistic regression first
+
+heat = subset(Surv, Treatment =="Heat")
+
 str(Surv)
 
 Surv$Survival = as.factor(Surv$Survival)
 Surv$Treatment = factor(Surv$Treatment, levels = c("Heat", "Room", "Control"))
 
 
-surv_mod<- gam(Survival ~ Treatment + Pooping + weight, 
+
+heat$Survival = as.factor(heat$Survival)
+
+surv_mod<- glm(Survival ~  Pooping + weight + random(Bucket_ID),
                family = binomial(link = "logit"), 
-               data = Surv)
+               data = heat)
 summary(surv_mod)
 
 tbl_regression(surv_mod)
+
+
+## survival model - 
+
   
