@@ -17,7 +17,9 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 
 # Generate data frame to hold just the binary variables. Upper limit of 
 # dataframe is intentionally too big (I'm just removing the top 35 rows).
-SelectedData0 <- DailyLog[35:1118,] %>%
+SelectedData <- DailyLog %>%
+  # remove the first 34 lines of data frame (pre-experiment data).
+  tail(-34) %>%
   # Select and rename variables
   select(date = Date,
          date_time = dateTime,
@@ -34,14 +36,6 @@ SelectedData0 <- DailyLog[35:1118,] %>%
          resp_evisc = respiratory_evisceration,
          spawn = Spawn) %>%
   mutate(combinedID = paste(bucketID, cukeID))
-  # Select only rows with a value for at least one of the binary variables
-SelectedData <- SelectedData0 %>%
-  filter(FALSE == is.na(alive) |
-         FALSE == is.na(death_time) |
-         FALSE == is.na(poop) |
-         FALSE == is.na(evisceration) |
-         FALSE == is.na(resp_evisc) |
-         FALSE == is.na(spawn))
 
 DeathData <- SelectedData %>%
   # Filter for rows with death data
@@ -76,22 +70,6 @@ SpawnData <- SelectedData %>%
   select(combinedID, spawn) %>%
   distinct(combinedID, .keep_all = TRUE)
 
-#SpermData <- SelectedData %>%
-  # Filter for rows with evisceration data
- # mutate(spawn = gsub("yes", 1, spawn, ignore.case = TRUE)) %>%
-#  filter(spawn == 1) %>%
-#  rename(sperm_spawn = spawn)%>%
-#  select(combinedID, sperm_spawn) %>%
-#  distinct(combinedID, .keep_all = TRUE)
-
-#EggData <- SelectedData %>%
-  # Filter for rows with evisceration data
- # mutate(spawn = gsub("e[A-z]{2,3}", 1, spawn, ignore.case = TRUE)) %>%
-#  filter(spawn == 1) %>%
-#  rename(egg_spawn = spawn)%>%
- # select(combinedID, egg_spawn) %>%
-#  distinct(combinedID, .keep_all = TRUE)
-
 BinaryVariables <- c("DeathData", "EviscData", "Resp_EviscData", "PoopData", "SpawnData")
 BinaryData <- SelectedData %>%
   distinct(combinedID)
@@ -103,14 +81,14 @@ for(i in BinaryVariables) {
 
 rm(variable, SpawnData, PoopData, EviscData)
 
-FinalBinary <- SelectedData0 %>%
+FinalBinary <- SelectedData %>%
   select(date_time,
-       sea_table,
-       table_position,
-       bucketID,
-       cukeID,
-       combinedID,
-       treatment) %>%
+         sea_table,
+         table_position,
+         bucketID,
+         cukeID,
+         combinedID,
+         treatment) %>%
   distinct(combinedID, .keep_all = TRUE) %>%
   drop_na()
 
@@ -129,27 +107,3 @@ FinalBinary$poop <- FinalBinary$poop %>%
 FinalBinary$spawn <- FinalBinary$spawn %>% 
   replace_na(0) %>%
   as.numeric(FinalBinary$spawn)
-
-# EVISCERATION
-glm_evisc <- glm(evisceration ~ treatment, 
-               # Tell the glm function that you're using a binomial distribution
-               # and a "logit" link function.
-               family = binomial(link = "logit"), 
-               data = FinalBinary)
-check_model(glm_evisc)
-
-# RESP_EVISC
-glm_resp_evisc <- glm(resp_evisc ~ treatment, 
-                 # Tell the glm function that you're using a binomial distribution
-                 # and a "logit" link function.
-                 family = binomial(link = "logit"), 
-                 data = FinalBinary)
-check_model(glm_resp_evisc)
-
-# SPAWN
-glm_spawn <- glm(spawn ~ treatment, 
-                 # Tell the glm function that you're using a binomial distribution
-                 # and a "logit" link function.
-                 family = binomial(link = "logit"), 
-                 data = FinalBinary)
-check_model(glm_spawn)
