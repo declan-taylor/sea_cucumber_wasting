@@ -164,8 +164,8 @@ add_stressData <- function(datafile){
 add_weightData <- function(datafile){
   WeightData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
     mutate(combinedID = paste(Bucket_ID, Cuke_ID)) %>%
-    select(weight_g = Weight_2,
-           combinedID)
+    mutate(weight_g= (Weight_g + Weight_2)/2) %>%
+    select(weight_g, combinedID)
   
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
 }
