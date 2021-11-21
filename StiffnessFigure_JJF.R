@@ -23,7 +23,7 @@ droop_plot =
   ggplot(data =stiff, aes(x=as.factor(Date), fill=Droop_score))+
   geom_bar(alpha=0.8, color="black", size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
-                     labels=c(1,2,3,4,5,6,7))+
+                     labels=c("Nov09", "Nov10", "Nov11", "Nov12", "Nov13","Nov14", "Nov15"))+
     xlab("Day")+
   #scale_x_date(date_labels = "%b%d", date_breaks="1 day")+
   geom_vline(xintercept=1.5, linetype=2)+
@@ -80,9 +80,16 @@ rcorr(stiff$Squeeze_score,stiff$Droop_score, type="spearman") # looking at corre
 
 ##### SHATISTICS #####
 # Running ordinal regressions on the data
-summary(clmm(Squeeze_score~ Treatment  + (1|Unique_ID), data = stiff)) # squeeze
-summary(clmm(Droop_score~ Treatment  + (1|Unique_ID), data = stiff)) # droop
+str(stiff)
 
+stiff_mod = clmm(Squeeze_score~ Treatment+as.factor(Date)+ (1|Unique_ID) +(1|Bucket_ID)+(1|Sea_Table),
+                 data = stiff) # squeeze
+tbl_regression(stiff_mod)
+
+
+
+droop_mod= clmm(Droop_score~ Treatment + as.factor(Date)+ (1|Unique_ID) +(1|Bucket_ID)+(1|Sea_Table), data = stiff) # droop
+tbl_regression(droop_mod)
 
 
 
