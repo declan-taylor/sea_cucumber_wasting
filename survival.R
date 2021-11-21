@@ -3,6 +3,7 @@ library(lubridate)
 library(tidyverse)
 library(gamlss)
 library(gtsummary)
+library(mgcv)
 
 
 # Import Data
@@ -12,8 +13,11 @@ Surv <- read_csv("data/SurvivalData.csv", col_names = TRUE) %>%
          Bucket_ID = as.factor(Bucket_ID),
          Cuke_ID=as.factor(Cuke_ID),
          Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'),
-         weight=(Weight_g+Weight_2)/2)
+         weight=(Weight_g+Weight_2)/2) %>%
+  select(-c(...14, Dead_Weight )) 
 str(Surv)
+
+
 
 surv_plot = 
   ggplot(data =Surv, aes(x=Treatment, fill=Survival))+
@@ -35,7 +39,10 @@ ggsave("figures/survival.jpg",plot=surv_plot, width=5, height=4)
 str(Surv)
 
 Surv$Survival = as.factor(Surv$Survival)
-surv_mod<- glm(Survival ~ Treatment + Pooping + weight, 
+Surv$Treatment = factor(Surv$Treatment, levels = c("Heat", "Room", "Control"))
+
+
+surv_mod<- gam(Survival ~ Treatment + Pooping + weight, 
                family = binomial(link = "logit"), 
                data = Surv)
 summary(surv_mod)
