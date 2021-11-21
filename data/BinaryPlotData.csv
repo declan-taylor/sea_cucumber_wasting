@@ -1,0 +1,10 @@
+﻿Treatment,Variable,Count
+control,evisceration,1
+control,resp_evisc,0
+control,spawn,3
+heat,evisceration,5
+heat,resp_evisc,2
+heat,spawn,9
+room,evisceration,4
+room,resp_evisc,0
+room,spawn,9
