@@ -1,4 +1,7 @@
-# EVISCERATION
+# Statistics: Modelling the impact of treatment (and other variables) on 
+# evisceration and spawning variables.
+
+
 glm_evisc <- glm(evisceration ~ treatment, 
                  # Tell the glm function that you're using a binomial distribution
                  # and a "logit" link function.
