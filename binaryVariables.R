@@ -180,6 +180,6 @@ add_weightData <- function(datafile){
 
 # Run all 3 functions once, sequentially. Returned data frame should be 16 
 # variables across.
-create_individualData("DailyLog.csv")
-add_stressData("BehaviourData.csv")
+create_individualData("DailyLog_final.csv")
+add_stressData("BehaviourData_final.csv")
 add_weightData("SizeData.csv")
