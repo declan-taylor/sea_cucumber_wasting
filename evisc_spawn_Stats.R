@@ -60,23 +60,80 @@ evisc_residuals <- simulateResiduals(evisc.mod.full)
 plot(evisc_residuals)
 # Result: QQ plot looks great, proceeding with this model.
 
+
+
+#-----------------------------------------------------------------------------
 # 2. RESP_EVISC: modelling the impact of treatment, weight, and guts status, 
 # along with random effects, on respiratory evisceration, which occurred only 
 # twice, in the 22C treatment Based on data frame `IndividualData`.
 
-fitDist
+# Determining the distribution of the data, based on our knowledge that it 
+# follows a binomial distribution.
+fitDist(resp_evisc, data = IndividualData, type = "binom", try.gamlss = T)
 
-glm_resp_evisc <- glm(resp_evisc ~ treatment, 
-                      # Tell the glm function that you're using a binomial distribution
-                      # and a "logit" link function.
-                      family = binomial(link = "logit"), 
-                      data = FinalBinary)
-check_model(glm_resp_evisc)
+# The FULL MODEL. Respiratory evisceration is dependent on treatment, and also 
+# cucumber weight and pooping status. Sea table and table position are included 
+# as random effects.
+respEvisc.mod.full <- gamlss(resp_evisc ~ 
+                           treatment + weight_g + poop + 
+                           random(sea_table) + random(table_position),
+                         family = BI(),
+                         data = IndividualData)
 
-# 3. SPAWN:
-glm_spawn <- glm(spawn ~ treatment, 
-                 # Tell the glm function that you're using a binomial distribution
-                 # and a "logit" link function.
-                 family = binomial(link = "logit"), 
-                 data = FinalBinary)
-check_model(glm_spawn)
+# The NULL MODEL.
+respEvisc.mod.null <- gamlss(resp_evisc ~ 1,
+                         family = BI(),
+                         data = IndividualData)
+
+# Forwards selection.
+fwd.respEvisc.mod <- stepGAIC(evisc.mod.null, 
+                          scope = list(lower = evisc.mod.null,
+                                       upper = evisc.mod.full),
+                          direction = "forward", 
+                          trace = F)
+formula(fwd.respEvisc.mod)
+## resp_evisc ~ treatment
+summary(fwd.respEvisc.mod)
+## treatment is not significant but is the best explanation
+
+# Sanity check: simulating residuals from the full model using the DHARMa 
+# package.
+respEvisc_residuals <- simulateResiduals(respEvisc.mod.full)
+plot(respEvisc_residuals)
+# Error!!!
+
+#-----------------------------------------------------------------------------
+# 3. SPAWN: determining if there is a significant correlation between spawning
+# and treament.
+fitDist(spawn, data = IndividualData, type = "binom", try.gamlss = T)
+
+# The FULL MODEL. Respiratory evisceration is dependent on treatment, and also 
+# cucumber weight and pooping status. Sea table and table position are included 
+# as random effects.
+spawn.mod.full <- gamlss(spawn ~ 
+                           treatment + weight_g + poop + 
+                           random(sea_table) + random(table_position),
+                         family = BI(),
+                         data = IndividualData)
+
+# The NULL MODEL.
+spawn.mod.null <- gamlss(spawn ~ 1,
+                         family = BI(),
+                         data = IndividualData)
+
+# Forwards selection.
+fwd.spawn.mod <- stepGAIC(evisc.mod.null, 
+                          scope = list(lower = evisc.mod.null,
+                                       upper = evisc.mod.full),
+                          direction = "forward", 
+                          trace = F)
+formula(fwd.spawn.mod)
+## evisceration ~ weight_g + poop
+summary(fwd.spawn.mod)
+## treatment is not the best explanation... again!?
+
+# Sanity check: simulating residuals from the full model using the DHARMa 
+# package.
+spawn_residuals <- simulateResiduals(spawn.mod.full)
+plot(spawn_residuals)
+# Error!!!
