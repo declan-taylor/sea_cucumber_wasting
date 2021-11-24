@@ -1,6 +1,17 @@
 # Statistics: Modelling the impact of treatment (and other variables) on 
 # evisceration and spawning variables.
 
+# 1. Evisceration: modelling the impact of treatment, weight, and guts status, 
+# along with random effects, on evisceration. Based on data frame 
+# `IndividualData`
+
+
+
+
+
+
+
+
 
 glm_evisc <- glm(evisceration ~ treatment, 
                  # Tell the glm function that you're using a binomial distribution
