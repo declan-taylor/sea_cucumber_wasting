@@ -105,6 +105,7 @@ create_individualData <- function(datafile){
       replace_na()
   }
 
+
   #IndividualData$death_time <- IndividualData$death_time %>% replace_na("0")
   IndividualData$evisceration <- IndividualData$evisceration %>% 
     replace_na(0) %>%
@@ -178,6 +179,7 @@ add_weightData <- function(datafile){
   
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
 }
+
 
 # Run all 3 functions once, sequentially. Returned data frame should be 16 
 # variables across.
