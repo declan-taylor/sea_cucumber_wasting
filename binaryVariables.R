@@ -119,7 +119,11 @@ create_individualData <- function(datafile){
     replace_na(0) %>%
     as.numeric(IndividualData$spawn)
   
-  IndividualData <<- IndividualData  
+  # Fix data types and assign IndividualData to the global environment
+  IndividualData <<- IndividualData %>%
+    mutate(treatment = as.factor(treatment),
+           table_position = as.factor(table_position),
+           cukeID = as.factor(cukeID))
 }
   
 add_stressData <- function(datafile){
@@ -148,11 +152,16 @@ add_stressData <- function(datafile){
   # Generate initial data values for activiyt, droop, and squeeze based on the 
   # readings taken on the first day of the experiment.
   initial_stress_values <- StressData %>%
-   # filter(date_time == "2021-11-09 09:40:00") 
+   # dplyr method of doing: filter(date_time == "2021-11-09 09:40:00") 
     mutate(date = as.character(date),
            time = as.character(time)) %>%
     filter(date == "2021-11-09" & 
            time == "09:40:00") %>%
+    # Make droop and squeeze data factorial
+    mutate(droop = as.factor(droop),
+           squeeze = as.factor(squeeze)) %>%
+    # Columns to be added to IndividualData, with droop and squeeze indicated
+    # as initial data.
     select(combinedID,
            in_activity = activity,
            in_droop = droop,
@@ -170,6 +179,8 @@ add_weightData <- function(datafile){
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
 }
 
+# Run all 3 functions once, sequentially. Returned data frame should be 16 
+# variables across.
 create_individualData("DailyLog.csv")
 add_stressData("BehaviourData.csv")
 add_weightData("SizeData.csv")
