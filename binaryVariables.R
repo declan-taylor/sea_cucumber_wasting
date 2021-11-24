@@ -108,7 +108,9 @@ create_individualData <- function(master_dataframe){
   IndividualData <<- IndividualData  
 }
   
-  IndividualData$death_time <- IndividualData$death_time %>% replace_na("0")
+
+
+
   IndividualData$evisceration <- IndividualData$evisceration %>% 
     replace_na(0) %>%
     as.numeric(IndividualData$evisceration)
@@ -124,3 +126,4 @@ create_individualData <- function(master_dataframe){
 
 
 create_individualData(DailyLog)
+

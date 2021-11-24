@@ -4,7 +4,7 @@ library(tidyverse)
 library(gamlss)
 library(gtsummary)
 library(mgcv)
-
+library(lme4)
 
 # Import Data
 Surv <- read_csv("data/SurvivalData.csv", col_names = TRUE) %>%
@@ -13,7 +13,7 @@ Surv <- read_csv("data/SurvivalData.csv", col_names = TRUE) %>%
          Bucket_ID = as.factor(Bucket_ID),
          Cuke_ID=as.factor(Cuke_ID),
          Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'),
-         weight=(Weight_g+Weight_2)/2) %>%
+         Mean_weight=(Weight_g+Weight_2)/2) %>%
   select(-c(...14, Dead_Weight )) 
 str(Surv)
 
@@ -42,15 +42,15 @@ heat = subset(Surv, Treatment =="Heat")
 str(Surv)
 
 Surv$Survival = as.factor(Surv$Survival)
-Surv$Treatment = factor(Surv$Treatment, levels = c("Heat", "Room", "Control"))
+Surv$Treatment = factor(Surv$Treatment, levels = c("Control", "Room", "Heat"))
 
 
-
+str(heat)
 heat$Survival = as.factor(heat$Survival)
 
-surv_mod<- glm(Survival ~  Pooping + weight + random(Bucket_ID),
+surv_mod<- glm(Survival ~  Treatment +Pooping + Mean_weight,
                family = binomial(link = "logit"), 
-               data = heat)
+               data = Surv)
 summary(surv_mod)
 
 tbl_regression(surv_mod)
