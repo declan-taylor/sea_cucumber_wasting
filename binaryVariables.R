@@ -1,8 +1,5 @@
 library(here)
 library(lubridate)
-library(fitdistrplus)
-library(performance)
-library(gamlss)
 library(tidyverse)
 
 # This function generates our individual level data with death_time, spawning, 
@@ -14,10 +11,7 @@ create_individualData <- function(datafile){
     # Format `Date` column to POSIX standard
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
-    mutate(dateTime = ymd_hms(dateTime)) %>%
-    # Make `Sea_Table` and `Bucket_ID` factorial data.
-    mutate(Sea_Table = as.factor(Sea_Table),
-           Bucket_ID = as.factor(Bucket_ID))
+    mutate(dateTime = ymd_hms(dateTime))
   
   # Generate data frame to hold just the binary variables. Upper limit of 
   # dataframe is intentionally too big (I'm just removing the top 35 rows).
@@ -124,7 +118,10 @@ create_individualData <- function(datafile){
   IndividualData <<- IndividualData %>%
     mutate(treatment = as.factor(treatment),
            table_position = as.factor(table_position),
-           cukeID = as.factor(cukeID))
+           cukeID = as.factor(cukeID),
+           poop = as.factor(poop),
+           sea_table = as.factor(sea_table),
+           bucketID = as.factor(bucketID))
 }
   
 add_stressData <- function(datafile){
