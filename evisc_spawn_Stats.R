@@ -4,14 +4,14 @@
 # Be sure to run BinaryVariables.R prior to running this script!
 library(DHARMa)
 library(performance)
+library(gtsummary)
 library(gamlss)
 library(tidyverse)
 
 # Drop the final row (all NAs) and the death_time and in_activity columns 
 # (contain NAs) from IndividualData, so we can use gamlss models.
 IndividualData <- IndividualData %>%
-  select(-c(death_time, in_activity)) %>%
-  head(-1)
+  select(-c(death_time, in_activity))
 
 # 1. EVISCERATION: modelling the impact of treatment, weight, and guts status, 
 # along with random effects, on evisceration. Based on data frame 
@@ -60,7 +60,7 @@ evisc_residuals <- simulateResiduals(evisc.mod.full)
 plot(evisc_residuals)
 # Result: QQ plot looks great, proceeding with this model.
 
-
+tbl_regression(evisc.mod.full)
 
 #-----------------------------------------------------------------------------
 # 2. RESP_EVISC: modelling the impact of treatment, weight, and guts status, 
@@ -94,6 +94,7 @@ fwd.respEvisc.mod <- stepGAIC(evisc.mod.null,
 formula(fwd.respEvisc.mod)
 ## resp_evisc ~ treatment
 summary(fwd.respEvisc.mod)
+tbl_regression(fwd.respEvisc.mod)
 ## treatment is not significant but is the best explanation
 
 # Sanity check: simulating residuals from the full model using the DHARMa 
