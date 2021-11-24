@@ -71,6 +71,7 @@ create_individualData <- function(datafile){
   spawn <- SelectedData %>%
     # text entries may be "yes" or "eggs".
     mutate(spawn = gsub("[A-z]{3,4}", 1, spawn, ignore.case = TRUE)) %>%
+    filter(FALSE == is.na(spawn)) %>%
     select(combinedID, spawn) %>%
     distinct(combinedID, .keep_all = TRUE)
   
