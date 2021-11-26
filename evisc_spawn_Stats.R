@@ -84,35 +84,9 @@ fwd.respEvisc.mod <- stepGAIC(respEvisc.mod.null,
 formula(fwd.respEvisc.mod)
 ## resp_evisc ~ treatment
 summary(fwd.respEvisc.mod)
-## treatment is not significant but is the best explanation. p = 0.995.
+## treatment is not significant but is the best explanation. p = 0.995. This is
+# because there's no variance in 2 of the treatmnets (because phenotype was 
+# not observed in 'room' and 'control').
 
-#-----------------------------------------------------------------------------
-# 3. SPAWN: determining if there is a significant correlation between spawning
-# and treament.
-fitDist(spawn, data = EviscSpawnData, type = "binom", try.gamlss = T)
-
-# The FULL MODEL. Respiratory evisceration is dependent on treatment, and also 
-# cucumber weight and pooping status. Sea table and table position are included 
-# (via tableID) as random effects.
-spawn.mod.full <- gamlss(spawn ~ 
-                           treatment + weight_g + poop,# + 
-                           #random(tableID),
-                         family = BI(),
-                         data = EviscSpawnData)
-
-# The NULL MODEL.
-spawn.mod.null <- gamlss(spawn ~ 1,
-                         family = BI(),
-                         data = EviscSpawnData)
-
-# Forwards selection.
-fwd.spawn.mod <- stepGAIC(spawn.mod.null, 
-                          scope = list(lower = spawn.mod.null,
-                                       upper = spawn.mod.full),
-                          direction = "forward", 
-                          trace = F)
-formula(fwd.spawn.mod)
-## If random effects are included, spawn ~ random(tableID).
-## If they are not, spawn ~ treatment. Intercept and room are significant but heat is not.
-summary(fwd.spawn.mod)
-## treatment is not the best explanation... again!?
+# Stats are kind of pointless here, we will just mention in results/discussion
+# that 2 of them eviscerated.
