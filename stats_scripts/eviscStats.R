@@ -22,10 +22,10 @@ fitDist(evisceration, data = EviscSpawnData, type = "binom", try.gamlss = T)
 # weight and pooping status. Sea table and table position are included as 
 # random effects.
 evisc.mod.full <- gamlss(evisceration ~ 
-                      treatment + weight_g + poop + 
-                      random(tableID),
-                    family = BI(),
-                    data = EviscSpawnData)
+                           treatment + weight_g + poop + bucketID +
+                           random(tableID),
+                         family = BI(),
+                         data = EviscSpawnData)
 
 # The NULL MODEL.
 evisc.mod.null <- gamlss(evisceration ~ 1,
