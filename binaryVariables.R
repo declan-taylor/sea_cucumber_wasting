@@ -7,7 +7,7 @@ library(tidyverse)
 # easily made in one click.
 create_individualData <- function(datafile){
   # Import Data
-  DailyLog <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  DailyLog <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     # Format `Date` column to POSIX standard
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
@@ -126,7 +126,7 @@ create_individualData <- function(datafile){
   
 add_stressData <- function(datafile){
   # Import data
-  StressData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  StressData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     # Format `Date` column to POSIX standard
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
@@ -166,7 +166,7 @@ add_stressData <- function(datafile){
 }
 
 add_weightData <- function(datafile){
-  WeightData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  WeightData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     mutate(combinedID = paste(Bucket_ID, Cuke_ID)) %>%
     mutate(weight_g= (Weight_g + Weight_2)/2) %>%
     select(weight_g, combinedID)
