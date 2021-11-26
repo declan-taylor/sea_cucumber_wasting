@@ -87,6 +87,3 @@ summary(fwd.respEvisc.mod)
 ## treatment is not significant but is the best explanation. p = 0.995. This is
 # because there's no variance in 2 of the treatmnets (because phenotype was 
 # not observed in 'room' and 'control').
-
-# Stats are kind of pointless here, we will just mention in results/discussion
-# that 2 of them eviscerated.

@@ -24,8 +24,8 @@ fitDist(death, data = DeathData, type = "binom", try.gamlss = T)
 # Full model, no random effects. BI() used as family as death is represented by
 # a 1, and survival a 0. Respiratory evisceration is omitted because all those
 # that eviscerated their respiratory tree died.
-death.mod.full <- gamlss(death ~ 
-                      evisceration + poop + spawn + in_droop + in_squeeze + weight_g,
+death.mod.full <- gamlss(death ~ evisceration + poop + spawn + in_droop + in_squeeze + weight_g +
+                        random()
                     family = BI(),
                     data = DeathData)
 
