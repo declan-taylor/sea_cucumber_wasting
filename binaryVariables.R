@@ -7,7 +7,7 @@ library(tidyverse)
 # easily made in one click.
 create_individualData <- function(datafile){
   # Import Data
-  DailyLog <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  DailyLog <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     # Format `Date` column to POSIX standard
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
@@ -33,7 +33,8 @@ create_individualData <- function(datafile){
            evisceration = Evisceration,
            resp_evisc = respiratory_evisceration,
            spawn = Spawn) %>%
-    mutate(combinedID = paste(bucketID, cukeID))
+    mutate(combinedID = paste(bucketID, cukeID),
+           tableID = paste(sea_table, table_position))
   
   # For each individual-level variable, create a dataframe that selects only
   # the rows for which that variable's column has data. Each dataframe is named
@@ -82,8 +83,7 @@ create_individualData <- function(datafile){
   # (i.e. all the unique bins in our experiment).
   IndividualData <- SelectedData %>%
     select(date_time,
-           sea_table,
-           table_position,
+           tableID,
            bucketID,
            cukeID,
            combinedID,
@@ -118,23 +118,19 @@ create_individualData <- function(datafile){
   # Fix data types and assign IndividualData to the global environment
   IndividualData <<- IndividualData %>%
     mutate(treatment = as.factor(treatment),
-           table_position = as.factor(table_position),
            cukeID = as.factor(cukeID),
            poop = as.factor(poop),
-           sea_table = as.factor(sea_table),
+           tableID = as.factor(tableID),
            bucketID = as.factor(bucketID))
 }
   
 add_stressData <- function(datafile){
   # Import data
-  StressData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  StressData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     # Format `Date` column to POSIX standard
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
     mutate(dateTime = ymd_hms(dateTime)) %>%
-    # Make `Sea_Table` and `Bucket_ID` factorial data.
-    mutate(Sea_Table = as.factor(Sea_Table),
-           Bucket_ID = as.factor(Bucket_ID)) %>%
     select(date = Date,
            time = Time,
            date_time = dateTime,
@@ -170,7 +166,7 @@ add_stressData <- function(datafile){
 }
 
 add_weightData <- function(datafile){
-  WeightData <- read_csv(paste0("data/", datafile), col_names = TRUE) %>%
+  WeightData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     mutate(combinedID = paste(Bucket_ID, Cuke_ID)) %>%
     mutate(weight_g= (Weight_g + Weight_2)/2) %>%
     select(weight_g, combinedID)
