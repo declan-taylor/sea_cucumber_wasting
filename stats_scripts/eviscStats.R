@@ -20,7 +20,7 @@ fitDist(evisceration, data = EviscSpawnData, type = "binom", try.gamlss = T)
 
 # The FULL MODEL. Evisceration is dependent on treatment, and also cucumber 
 # weight and pooping status. Sea table and table position are included as 
-# random effects.
+# random effects
 evisc.mod.full <- gamlss(evisceration ~ 
                            treatment + weight_g + poop + bucketID +
                            random(tableID),
