@@ -12,9 +12,9 @@ DeathData$death_time <- DeathData$death_time %>%
 DeathData <- DeathData %>%
   rename("death" = death_time)
 
-death_aov <- aov(death ~ treatment, data = DeathData)
-summary(death_aov)
-TukeyHSD(death_aov)
+kruskal.test(death ~ treatment, data = DeathData)
+# p-value = 0.003374
+FSA::dunnTest(death ~ treatment, data = DeathData)
 
 # Looking at the distribution of death data to prepare a model.
 fitDist(death, data = DeathData, type = "binom", try.gamlss = T)
