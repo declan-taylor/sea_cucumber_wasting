@@ -38,7 +38,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 tempRange <- DailyLog %>%
   filter(date == "2021-11-11" | date == "2021-11-12") %>%
   select(date, date_time, tableID, treatment, temp_C) %>%
-  filter(treatment == "control")
+  filter(treatment == "room")
 
 range(tempRange$temp_C)
 mean(tempRange$temp_C)
@@ -46,30 +46,34 @@ mean(tempRange$temp_C)
 # FOR ROOM: 14.9 to 17.9, mean = 16.79
 # FOR HEAT: 20.0 to 23.3, mean =  21.86
 
-
-
 death_time <- DailyLog %>%
   # Filter for rows with death data
   filter(FALSE == is.na(alive) | FALSE == is.na(death_time)) %>%
   # Use POSIXct standard for death_time
   mutate(death_time = ymd_hms(paste(date, death_time))) %>%
-  select(death_time, bucketID, temp_C)
+  select(death_time, bucketID, temp_C) %>%
+  mutate(placehold = 1)
 
 Temp_Time <- DailyLog %>%
-  select(date_time, sea_table, table_position, bucketID, tableID, temp_C)
+  select(date_time, date, sea_table, table_position, bucketID, tableID, temp_C)
 
-# TEMPERATURE PLOT
-# Create the colour gradient for the background:
-#grad <- colorRampPalette(c("#CC0000", "#0000CC"), alpha = 1)(20)
+DateVector <- (c(ymd("2021-11-09"),"2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"))
 
 TempPlot <- ggplot() +
   geom_line(data = Temp_Time,
             aes(x = date_time,
                 y = temp_C,
+                # Ignore warning about 'unknown aesthetic'... this code is 
+                # still important and functioning!
                 fill = bucketID)) +
+  scale_x_datetime(date_breaks = "1 day",
+                   date_labels = "%b %d") +
+  # This is for the 5 dots indicating cucumber death.
   geom_point(data = death_time,
              aes(x = death_time,
-                 y = temp_C)) +
+                 y = temp_C),
+                 size = 2.5, 
+             colour = "red") +
   geom_hline(aes(yintercept = 22,
              colour = "22ºC")) +
   geom_hline(aes(yintercept = 17,
@@ -89,3 +93,13 @@ ggsave("temp_plot.png",
        TempPlot,
        device = "png",
        path = here("figures"))
+
+
+
+
+
+
+Temp_Time %>%
+  select(date, bucketID, temp_C) %>%
+  filter(temp_C > 20.5)
+  
