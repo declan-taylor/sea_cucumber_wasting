@@ -27,6 +27,7 @@ evisc.mod.full <- gamlss(evisceration ~
                          family = BI(),
                          data = EviscSpawnData)
 
+
 # The NULL MODEL.
 evisc.mod.null <- gamlss(evisceration ~ 1,
                          family = BI(),
@@ -51,6 +52,41 @@ bwd.evisc.mod <- stepGAIC(evisc.mod.null,
 formula(fwd.evisc.mod)
 ## evisceration ~ weight_g + poop
 summary(fwd.evisc.mod)
+
+# It makes sense that pooping explains a significant amount of variation given 
+# that a cucumber that is not pooping likely doesn't have guts, so it cannot
+# eviscerate. We therefore reran the above model without pooping included in 
+# the full model. Just learning about weird model stuff; this isn't a stats 
+# step for the final published material.
+
+evisc.mod.full <- gamlss(evisceration ~ 
+                           treatment + weight_g + bucketID +
+                           random(tableID),
+                         family = BI(),
+                         data = EviscSpawnData)
+
+# Forwards selection.
+fwd.evisc.mod <- stepGAIC(evisc.mod.null, 
+                          scope = list(lower = evisc.mod.null,
+                                       upper = evisc.mod.full),
+                          direction = "forward", 
+                          trace = F)
+formula(fwd.evisc.mod)
+## evisceration ~ poop + weight_g
+summary(fwd.evisc.mod)
+# weight (p = 0.0383) along is not significant in explaining variation in the 
+# model.
+
+# Backwards selection for the original model as a sanity check on the validity
+# of our forwards selection methods.
+bwd.evisc.mod <- stepGAIC(evisc.mod.null, 
+                          direction = "backward", 
+                          trace = F)
+formula(fwd.evisc.mod)
+## evisceration ~ weight_g + poop
+summary(fwd.evisc.mod)
+
+
 
 #-----------------------------------------------------------------------------
 # 2. RESP_EVISC: modelling the impact of treatment, weight, and guts status, 
