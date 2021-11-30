@@ -12,9 +12,9 @@ DeathData$death_time <- DeathData$death_time %>%
 DeathData <- DeathData %>%
   rename("death" = death_time)
 
-death_aov <- aov(death ~ treatment, data = DeathData)
-summary(death_aov)
-TukeyHSD(death_aov)
+kruskal.test(death ~ treatment, data = DeathData)
+# p-value = 0.003374
+FSA::dunnTest(death ~ treatment, data = DeathData)
 
 # Looking at the distribution of death data to prepare a model.
 fitDist(death, data = DeathData, type = "binom", try.gamlss = T)
@@ -24,8 +24,7 @@ fitDist(death, data = DeathData, type = "binom", try.gamlss = T)
 # Full model, no random effects. BI() used as family as death is represented by
 # a 1, and survival a 0. Respiratory evisceration is omitted because all those
 # that eviscerated their respiratory tree died.
-death.mod.full <- gamlss(death ~ evisceration + poop + spawn + in_droop + in_squeeze + weight_g +
-                        random()
+death.mod.full <- gamlss(death ~ evisceration + poop + in_droop + in_squeeze + weight_g,
                     family = BI(),
                     data = DeathData)
 
@@ -40,6 +39,6 @@ fwd.death.mod <- stepGAIC(death.mod.null,
                           direction = "forward", 
                           trace = F)
 formula(fwd.death.mod)
-## death ~ spawn
+## death ~ 1
 summary(fwd.death.mod)
-# WHY IS INCERCEPT ***?
+# null model is best explanation!
