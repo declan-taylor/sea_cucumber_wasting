@@ -1,3 +1,4 @@
+# THIS IS A SCRIPT THAT ISN'T USED FOR ANYTHING IN THE PAPER. PLEASE DISREGARD.
 library(here)
 library(lubridate)
 library(tidyverse)
@@ -37,8 +38,11 @@ SelectedData <- DailyLog[35:1000000,] %>%
            FALSE == is.na(evisceration) |
            FALSE == is.na(resp_evisc) |
            FALSE == is.na(spawn)) %>%
+  # Generate a `combinedID` from bucketID (1-30) and cukeID (A or B), which is 
+  # unique to each individual cucumber in the study.
   mutate(combinedID = paste(bucketID, cukeID))
 
+# -----------------------------------------------------------------------------
 DeathData <- SelectedData %>%
   # Filter for rows with death data
   filter(FALSE == is.na(alive) | FALSE == is.na(death_time)) %>%
