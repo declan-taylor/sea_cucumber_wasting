@@ -1,7 +1,8 @@
 # Statistics: Modelling the impact of treatment (and other variables) on 
 # evisceration and spawning variables.
 
-# Be sure to run BinaryVariables.R prior to running this script!
+# Be sure to run BinaryVariables.R prior to running this script, as the data 
+# comes from IndividualData, a dataframe generated in that script.
 library(gamlss)
 library(tidyverse)
 

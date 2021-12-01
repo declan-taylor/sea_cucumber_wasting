@@ -1,8 +1,9 @@
+# Load packages. If GAMLSS is loaded, this function will not run properly!
 library(here)
 library(lubridate)
 library(tidyverse)
 
-# This function generates our individual level data with death_time, spawning, 
+# This function generates our **individual level data** with death_time, spawning, 
 # evisceration, and poop data. The function exists so the dataframe can be 
 # easily made in one click.
 create_individualData <- function(datafile){
@@ -33,6 +34,8 @@ create_individualData <- function(datafile){
            evisceration = Evisceration,
            resp_evisc = respiratory_evisceration,
            spawn = Spawn) %>%
+    # Generate a `combinedID` from bucketID (1-30) and cukeID (A or B), which is 
+    # unique to each individual cucumber in the study.
     mutate(combinedID = paste(bucketID, cukeID),
            tableID = paste(sea_table, table_position))
   
@@ -41,8 +44,8 @@ create_individualData <- function(datafile){
   # after the variable it represents.
   # Format that data to change all the values to "1". Select only the 
   # combinedID and <variable> columns, and keep only the distinct combinedID
-  # values. This effectivley generates a list of buckets in which the <varible>
-  # process (i.e. pooping) occured.
+  # values. This effectively generates a list of cucumbers in which the
+  # <varible> process (i.e. pooping) occurred.
   death_time <- SelectedData %>%
     # Filter for rows with death data
     filter(FALSE == is.na(alive) | FALSE == is.na(death_time)) %>%
@@ -91,7 +94,9 @@ create_individualData <- function(datafile){
     distinct(combinedID, .keep_all = TRUE) %>%
     drop_na()
   
-  # Join each variable's data to the Binary
+  # For each of the individual data frames made above, join the `1` data 
+  # (selected occurance data) to the 1-column dataframe  for only the values 
+  # with 1s. The rest are left as NAs.
   for(i in SelectedVariables) {
     variable <- get(i)
     IndividualData <- full_join(IndividualData, variable, by = "combinedID")
@@ -100,8 +105,8 @@ create_individualData <- function(datafile){
       replace_na()
   }
 
-
-  #IndividualData$death_time <- IndividualData$death_time %>% replace_na("0")
+  # Replace NA values with 0s and make each column numberic; turns each binary
+  # response variable into a binary data column with 0s and 1s.
   IndividualData$evisceration <- IndividualData$evisceration %>% 
     replace_na(0) %>%
     as.numeric(IndividualData$evisceration)
@@ -115,7 +120,7 @@ create_individualData <- function(datafile){
     replace_na(0) %>%
     as.numeric(IndividualData$spawn)
   
-  # Fix data types and assign IndividualData to the global environment
+  # Fix data types to factors and assign IndividualData to the global environment
   IndividualData <<- IndividualData %>%
     mutate(treatment = as.factor(treatment),
            cukeID = as.factor(cukeID),
@@ -123,7 +128,9 @@ create_individualData <- function(datafile){
            tableID = as.factor(tableID),
            bucketID = as.factor(bucketID))
 }
-  
+
+# This function generates a dataframe of initial activity and stress scores and
+# joins said dataframe to the 'master' IndividualData dataframe.
 add_stressData <- function(datafile){
   # Import data
   StressData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
@@ -144,7 +151,7 @@ add_stressData <- function(datafile){
            droop = Droop_score) %>%
     mutate(combinedID = paste(bucketID, cukeID))
   
-  # Generate initial data values for activiyt, droop, and squeeze based on the 
+  # Generate initial data values for activity, droop, and squeeze based on the 
   # readings taken on the first day of the experiment.
   initial_stress_values <- StressData %>%
    # dplyr method of doing: filter(date_time == "2021-11-09 09:40:00") 
@@ -165,12 +172,16 @@ add_stressData <- function(datafile){
   IndividualData <<- full_join(IndividualData, initial_stress_values, by = "combinedID")
 }
 
+# This function adds weight data to the master IndividualData dataframe.
 add_weightData <- function(datafile){
   WeightData <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
     mutate(combinedID = paste(Bucket_ID, Cuke_ID)) %>%
-    mutate(weight_g= (Weight_g + Weight_2)/2) %>%
+    # Create an average weight from the two weight measurements taken at the 
+    # start of teh experiment.
+    mutate(weight_g = (Weight_g + Weight_2)/2) %>%
     select(weight_g, combinedID)
   
+  # Join the weight data to the full dataframe.
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
 }
 
