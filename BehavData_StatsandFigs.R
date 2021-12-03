@@ -192,8 +192,8 @@ squeeze_output = data.frame(coef = coef(Squeeze_Full), # coef
 
 stiff_output= rbind(droop_output, squeeze_output) # bind the two outputs together for plotting
 
-stiff_output$Treatment=c("Temp:17?C", "Temp:22?C", "Date:Nov 10", # naming treatments (for gg)
-                         "Date:Nov 11", "Date:Nov 12", "Date:Nov 13")
+stiff_output$Treatment=c("Temp:17°C", "Temp:22°C", "Day: 2", # naming treatments (for gg)
+                         "Day: 3", "Day :4", "Day: 5")
 stiff_output$Variable = c("Temp", "Temp", "Date", "Date", "Date", "Date")# naming variables (for gg)
 
 
