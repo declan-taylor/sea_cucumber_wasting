@@ -51,21 +51,32 @@ gamlss::histDist(lesion_max$max_lesions, "GEOM", density=T) # BEST FIT FOR DATA
 lesions_Full = gamlss(max_lesions ~ mean_weight + Treatment +
                       random(as.factor(Table_ID)) + random(as.factor(Bucket_ID)),
                       family = GEOM(), data = lesion_max)
+
+
+step.lesion.backward <- stepGAIC(lesions_Full, 
+                              direction = "backward", trace = F)
+
+formula(step.lesion.backward)
+summary(step.lesion.backward)
+
+
 summary(lesions_Full)
 
 str(lesion_max)
 
-treatlabs = c("12°C", "17°C", "22°C")
+treatlabs = c("12?C", "17?C", "22?C")
 names(treatlabs)=c("Control", "Room", "Heat")
 
 
 
-ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
-  geom_boxplot()+
+ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment, color=Treatment))+
+  geom_boxplot(color="black", alpha=0.8, outlier.shape=NA)+
+  geom_point(alpha=0.4, color ="black", position=position_dodge2(width=0.2))+
   scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
-  scale_x_discrete(labels=c("12°C", "17°C", "22°C"))+
+  scale_x_discrete(labels=c("12Â°C", "17Â°C", "22Â°C"))+
   scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Maximum Lesions / Indiv.")+xlab("Treatment")+
+  scale_color_manual(values=c("Gold", "Orange","Red"))+
+  ylab("Maximum Lesions per Sea Cucumber")+xlab("Treatment")+
   theme_bw()+
   theme(panel.grid=element_blank(), 
         legend.position="none")

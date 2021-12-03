@@ -25,6 +25,15 @@ Act = behav %>%
   dplyr::select(-c(Number_lesions, 'Bodywall lesions')) %>%
   na.omit()
 
+
+Act_medians = behav %>% 
+  dplyr::select(-c(Number_lesions, 'Bodywall lesions')) %>%
+  na.omit() %>%
+  group_by(Date, Treatment) %>%
+  summarise(median_act = median(Activity_Score))
+
+Act_medians
+
 # running kruskal-wallis tests to look for overall differences in treatments
 kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-09"))
 kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-10"))
@@ -34,7 +43,7 @@ kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-20"))
 
 # running Dunn tests to compare treatments on specific dates
 dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-09")) 
-dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-10"))
+FSA::dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-10"))
 dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-13"))
 dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-20"))
 
@@ -100,12 +109,15 @@ facet.labs=c("12°C", "17°C", "22°C")
 names(facet.labs)=c("Control", "Room", "Heat")
 
 squeeze_droop_cor = ggplot(data=stiff, aes(x=Squeeze_score, y=Droop_score, color=Treatment))+
-  geom_jitter(width=0.2, height=0.2)+
-  scale_color_manual(labels=c("Control (12?C)","Room (17?C)","Heat (22?C)"), values=c("Gold", "Orange","Red"))+
-  theme_bw()+ 
+  geom_count(aes(size=stat(prop), group=Treatment))+
+  scale_color_manual(labels=c("Control (12°C)","Room (17°C)","Heat (22°C)"), values=c("Gold", "Orange","Red"))+
+  theme_bw()+
   xlab("Antipredator Defense") + ylab("Structural Maintenance")+
-  theme(strip.text.y = element_text(size =12),
-        legend.position="NONE")+
+  scale_x_continuous(breaks=seq(0,3,1), limits = c(-0.1, 2.1))+
+  scale_y_continuous(breaks=seq(0,3,1),limits = c(-0.1, 2.5))+
+  theme(strip.text.y = element_text(size =10),
+        legend.position="right", 
+        panel.grid=element_blank())+
   facet_grid(Treatment~., labeller=labeller(Treatment = facet.labs))
 squeeze_droop_cor
 
