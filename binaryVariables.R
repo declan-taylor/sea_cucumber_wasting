@@ -191,3 +191,4 @@ add_weightData <- function(datafile){
 create_individualData("DailyLog_final.csv")
 add_stressData("BehaviourData_final.csv")
 add_weightData("SizeData.csv")
+

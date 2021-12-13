@@ -100,9 +100,11 @@ facet.labs=c("12째C", "17째C", "22째C")
 names(facet.labs)=c("Control", "Room", "Heat")
 
 squeeze_droop_cor = ggplot(data=stiff, aes(x=Squeeze_score, y=Droop_score, color=Treatment))+
-  geom_jitter(width=0.2, height=0.2)+
+  geom_jitter(width=0.1, height=0.1, alpha=0.6)+
   scale_color_manual(labels=c("Control (12?C)","Room (17?C)","Heat (22?C)"), values=c("Gold", "Orange","Red"))+
   theme_bw()+ 
+  scale_x_continuous(breaks=seq(0,2.3,1), limits = c(-0.2,2.3))+
+  scale_y_continuous(breaks=seq(0,2.3,1), limits = c(-0.2,2.3))+
   xlab("Antipredator Defense") + ylab("Structural Maintenance")+
   theme(strip.text.y = element_text(size =12),
         legend.position="NONE")+
@@ -112,20 +114,23 @@ squeeze_droop_cor
 ggsave("figures/squeeze_droop_correlation.jpg",plot=squeeze_droop_cor, width=6, height=4)
 
 ## CALCULATING CORRELATION 
-Hmisc::rcorr(stiff$Squeeze_score,stiff$Droop_score, type="spearman") # looking at correlation 
+Hmisc::rcorr(stiff$Squeeze_score,stiff$Droop_score, type="spearman") # looking at correlation between droop and squeeze
+
 
 ## PLOTTING SQUEEZE AND DROOP
 str(stiff)
+
 stiff_plot = stiff %>%
   mutate(Squeeze_score = as.factor(Squeeze_score),
          Droop_score = as.factor(Droop_score))
+
 squeeze_plot = 
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Squeeze_score))+
   geom_bar(alpha=0.8, color="black", size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15", "2021-11-20"),
                    labels=c(1,2,3,4,5,6,7,12))+
-  xlab("Day") + ylab("# Sea Cucumbers")+
-  geom_vline(xintercept=1.5, linetype=2)+ geom_vline(xintercept=4.5, linetype=2)+
+  xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
+  geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
   scale_fill_manual(name="Antipredator Stiffness",labels=c("0 - No Stiffness","1 - Partial Stiffness","2 - Full Stiffness"), 
                     values=c("burlywood4", "tan", "beige"))+ 
@@ -142,8 +147,8 @@ droop_plot =
   geom_bar(alpha=0.8, color="black", size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15", "2021-11-20"),
                    labels=c(1,2,3,4,5,6,7,12))+
-  xlab("Day") + ylab("# Sea Cucumbers")+
-  geom_vline(xintercept=1.5, linetype=2)+ geom_vline(xintercept=4.5, linetype=2)+
+  xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
+  geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
   scale_fill_manual(name="Structural Stiffness",labels=c("0 - No Stiffness","1 - Partial Stiffness","2 - Full Stiffness"), 
                     values=c("burlywood4", "tan", "beige"))+ 
@@ -192,8 +197,9 @@ squeeze_output = data.frame(coef = coef(Squeeze_Full), # coef
 
 stiff_output= rbind(droop_output, squeeze_output) # bind the two outputs together for plotting
 
-stiff_output$Treatment=c("Temp:17캜", "Temp:22캜", "Day: 2", # naming treatments (for gg)
-                         "Day: 3", "Day :4", "Day: 5")
+
+stiff_output$Treatment=c("Temp:17째C", "Temp:22째C", "Day 2", # naming treatments (for gg)
+                         "Day 3", "Day 4", "Day 5")
 stiff_output$Variable = c("Temp", "Temp", "Date", "Date", "Date", "Date")# naming variables (for gg)
 
 
@@ -202,9 +208,9 @@ ggplot(data=stiff_output, aes(x=coef, y=Variable, color=Treatment))+
   geom_point(position=position_dodge(0.8))+
   geom_errorbar(aes(xmin=lower, xmax=upper), size=1, width=0.4, position=position_dodge(0.8))+
   geom_vline(xintercept=0, linetype=2)+
-  xlab("Coefficient (Log Odds) ? 95 CI")+
-  scale_color_manual(values=c("grey30", "grey45", "grey60", "grey75",
-                              "goldenrod", "darkorange2"))+
+  xlab("Coefficient (Log Odds) 짹 95% Confidence Interval")+
+  scale_color_manual("Variable Category",values=c("grey30", "grey45", "grey60", "grey75",
+                              "goldenrod", "darkorange4"))+
   facet_grid(stiff~.)+
   theme_bw()
 
