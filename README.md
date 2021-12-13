@@ -5,8 +5,8 @@ DS project.
 Authors:
 
 Jonathan J Farr (Fall program student, BMSC, jfarr@ualberta.ca)
+
 Declan Taylor (Fall program student, BMSC, declanta@student.ubc.ca
-Sara JS Wuitchik (DS & ADA Instructor, BMSC; sjswuit@g.harvard.edu)
 
 ## Repository Layout
 Most code is in scripts in the main directory, except those which make figures 
