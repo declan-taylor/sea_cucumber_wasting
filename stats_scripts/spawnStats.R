@@ -116,6 +116,7 @@ sum(spawnData$spawn)
 
 # Statistics on spawn data as a whole.
 kruskal.test(spawn ~ treatment, data = spawnData)
+FSA::dunnTest(spawn ~ treatment, data = spawnData)
 # p = 0.379
 
 # Statistics on specifically sperm-spawning data.
