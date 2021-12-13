@@ -70,30 +70,36 @@ TempPlot <- ggplot() +
                 fill = bucketID)) +
   scale_x_datetime(date_breaks = "1 day",
                    date_labels = "%b %d") +
-  # This is for the 5 dots indicating cucumber death.
-  geom_hline(aes(yintercept = 24),
-             colour = "lightgrey") +
-  geom_point(data = death_time,
-             aes(x = death_time,
-                 y = 24),
-             size = 2.5,
-             shape = 7, 
-             colour = "red") +
+#  This is for the 5 dots indicating cucumber death.
+#  geom_hline(aes(yintercept = 24),
+#             colour = "lightgrey") +
+# geom_text(label = "Mortality",
+#          x = "2021-11-09 09:20:00",
+#          y = 24) + 
+#  geom_point(data = death_time,
+#             aes(x = death_time,
+#                 y = 24),
+#             size = 2.5,
+#             shape = 7, 
+#             colour = "red") +
   geom_hline(aes(yintercept = 22,
-             colour = "22ºC")) +
+             colour = "22ºC"),
+             size = 1,
+             alpha = 0.8) +
   geom_hline(aes(yintercept = 17,
-             colour = "17ºC")) +
+             colour = "17ºC"),
+             size = 1,
+             alpha = 0.8) +
   geom_hline(aes(yintercept = 12,
-             colour = "12ºC")) +
+             colour = "12ºC"),
+             size = 1,
+             alpha = 0.8) +
   labs(x = "Date",
        y = "Temperature (ºC)",
        colour = "Treatment Temperature") +
   scale_colour_manual(values = c("#0000CC", "#660066", "#CC0000")) +
     guides(colour = guide_legend(reverse = TRUE)) +
- #GEOM TEXT NOT SHOWING UP?
-   geom_text(label = "Mortality",
-            x = "2021-11-09 09:20:00",
-            y = 24) + 
+  scale_y_continuous(breaks = c(12, 14, 16, 18, 20, 22, 24))+
   theme_classic()
 
 ggsave("temp_plot.png", 

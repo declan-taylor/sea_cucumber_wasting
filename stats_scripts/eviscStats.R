@@ -8,16 +8,19 @@ library(tidyverse)
 
 # Drop the final row (all NAs) and the death_time and in_activity columns 
 # (contain NAs) from `IndividualData`, so we can use gamlss models.
-EviscSpawnData <- IndividualData %>%
+EviscData <- IndividualData %>%
   dplyr::select(-c(death_time, in_activity))
 
 # 1. EVISCERATION: modelling the impact of treatment, weight, and guts status, 
 # along with random effects, on evisceration. Based on data frame 
-# `EviscSpawnData`.
+# `EviscData`.
+
+sum(EviscData$evisceration)
+# N = 12 eviscerated
 
 # Determining the distribution of the data, based on our knowledge that it 
 # follows a binomial distribution.
-fitDist(evisceration, data = EviscSpawnData, type = "binom", try.gamlss = T)
+fitDist(evisceration, data = EviscData, type = "binom", try.gamlss = T)
 
 # The FULL MODEL. Evisceration is dependent on treatment, and also cucumber 
 # weight and pooping status. Sea table and table position are included as 
@@ -26,13 +29,13 @@ evisc.mod.full <- gamlss(evisceration ~
                            treatment + weight_g + poop + bucketID +
                            random(tableID),
                          family = BI(),
-                         data = EviscSpawnData)
+                         data = EviscData)
 
 
 # The NULL MODEL.
 evisc.mod.null <- gamlss(evisceration ~ 1,
                          family = BI(),
-                         data = EviscSpawnData)
+                         data = EviscData)
 
 # Forwards selection.
 fwd.evisc.mod <- stepGAIC(evisc.mod.null, 
@@ -64,7 +67,7 @@ evisc.mod.full <- gamlss(evisceration ~
                            treatment + weight_g + bucketID +
                            random(tableID),
                          family = BI(),
-                         data = EviscSpawnData)
+                         data = EviscData)
 
 # Forwards selection.
 fwd.evisc.mod <- stepGAIC(evisc.mod.null, 
@@ -92,11 +95,11 @@ summary(fwd.evisc.mod)
 #-----------------------------------------------------------------------------
 # 2. RESP_EVISC: modelling the impact of treatment, weight, and guts status, 
 # along with random effects, on respiratory evisceration, which occurred only 
-# twice, in the 22C treatment Based on data frame `EviscSpawnData`.
+# twice, in the 22C treatment Based on data frame `EviscData`.
 
 # Determining the distribution of the data, based on our knowledge that it 
 # follows a binomial distribution.
-fitDist(resp_evisc, data = EviscSpawnData, type = "binom", try.gamlss = T)
+fitDist(resp_evisc, data = EviscData, type = "binom", try.gamlss = T)
 
 # The FULL MODEL. Respiratory evisceration is dependent on treatment, and also 
 # cucumber weight and pooping status. Sea table and table position are included 
@@ -105,12 +108,12 @@ respEvisc.mod.full <- gamlss(resp_evisc ~
                            treatment + weight_g + poop + 
                            random(tableID),
                          family = BI(),
-                         data = EviscSpawnData)
+                         data = EviscData)
 
 # The NULL MODEL.
 respEvisc.mod.null <- gamlss(resp_evisc ~ 1,
                          family = BI(),
-                         data = EviscSpawnData)
+                         data = EviscData)
 
 # Forwards selection.
 fwd.respEvisc.mod <- stepGAIC(respEvisc.mod.null, 
