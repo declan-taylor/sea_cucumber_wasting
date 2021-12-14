@@ -9,33 +9,34 @@ Jonathan J Farr (Fall program student, BMSC, jfarr@ualberta.ca)
 Declan Taylor (Fall program student, BMSC, declanta@student.ubc.ca
 
 ## Repository Layout
-Most code is in scripts in the main directory, except those which make figures 
-which can be found in `figure_scripts`.
 
-## Paper
+Complete and annotated code that is necessary for reproducing our analyses is found in the RMarkdown File : Sea_Cucumber_Wasting_JF_DT_Dec2021.rmd
 
-## Data
-**NOTES FROM SARA:** *Raw* data from experiment, never touched again, and *manipulated* data.
+## paper
 
-## Results
+Contains final paper (Sea_Cucumber_Wasting_JF_DT_Dec2021_Paper.docx) and drafts (archived draft), as well as non-essential formatting documents, peer review rubrics and professor rubrics. 
 
-## Code
+## data
 
-### Figures
+Contains manipulated csv files (from raw_data) that are used and unused in analyses. Csv files used by the final .rmd are BehaviourData_Final, DailyLog_Final and SizeData. 
 
-### Statistics
+## figure_scripts_archive
 
-All scripts that generated stats can be found in the folder `stats_scripts`. 
+Contains archived RStudio scrips used to create figures. The most up to date figure scripts are in the main repo under Sea_Cucumber_Wasting_JF_DT_Dec2021.rmd
 
-**Spawning** and **mortality** were both analyzed with non-parametric Kruskal-
-Wallis tests, and can be found in "spawnStats.R" and "deathStats.R" 
-respectively.
+## figures
 
-**Evisceration** was analyzed with a logistic regression model which can be 
-found in "eviscStats.R".
+Contains figures created using R. Figures denoted with "fig_" in the caption are used in the final paper
 
-**Stiffening** data (droop and squeeze scores) were analyzed with ordinal 
-logistic regression models, which can be found in "stiff_droop_Stats.R".
+## images
 
-**Activity** scores were analyzed in "activity_Stats.R".
+Contains images used in the final paper. 
+
+## raw_data 
+
+Contains raw, unmanipulated data from the experiment, never touched again, with metadata for each excel file contained in the first sheet.
+
+## stats_scripts_archive
+
+Contains archived RStudio scrips used to conduct statistical analyses. The most up to date statistical scripts are in the main repo under Sea_Cucumber_Wasting_JF_DT_Dec2021.rmd
 
