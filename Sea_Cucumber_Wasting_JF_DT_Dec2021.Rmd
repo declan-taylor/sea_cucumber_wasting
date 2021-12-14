@@ -3,8 +3,8 @@ title: "Sea_Cucumber_Wasting_JF_DT_Dec2021"
 author: "Jonathan Farr and Declan Taylor"
 date: "12/12/2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -203,7 +203,7 @@ create_individualData <- function(datafile){
            bucketID = as.factor(bucketID))
 }
 
-# This function generates a dataframe of initial activity and stress scores and
+# This function generates a dataframe stress scores and
 # joins said dataframe to the 'master' IndividualData dataframe.
 add_stressData <- function(datafile){
   # Import data
@@ -225,7 +225,7 @@ add_stressData <- function(datafile){
            droop = Droop_score) %>%
     mutate(combinedID = paste(bucketID, cukeID))
   
-  # Generate initial data values for activity, droop, and squeeze based on the 
+  # Generate initial data values for droop and squeeze based on the 
   # readings taken on the first day of the experiment.
   initial_stress_values <- StressData %>%
    # dplyr method of doing: filter(date_time == "2021-11-09 09:40:00") 
@@ -272,7 +272,7 @@ add_weightData("SizeData.csv")
 ```
 
 ## Second, we read in longitudinal data frames with behaviours measured over time 
-This data will later be used for activity score & stiffness analysis
+This data will later be used for stiffness analysis
 ```{r,, warning=FALSE, message=FALSE}
 behav = read_csv("data/BehaviourData_Final.csv") %>% 
   mutate(
@@ -334,7 +334,6 @@ lesion_max = merge(lesion_max, size, by=c("Unique_ID"))
 # in the death column (only done for cucumbers that died).
 DeathData <- IndividualData %>%
   dplyr::mutate(death_time = gsub(".{1,}", 1, death_time)) %>%
-  # initial activity has NA values, remove it from the dataframe
   dplyr::select(-in_activity)
 
 # Replace NA values in the death_time colum with 0s.
@@ -356,7 +355,7 @@ stiff = behav %>%
 ```
 
 
-## Data for spawning = 
+## Data for spawning = spawnData
 
 ```{r, warning=FALSE, message=FALSE}
 
