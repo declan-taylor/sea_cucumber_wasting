@@ -378,7 +378,7 @@ Temp_Time &lt;- DailyLog %&gt;%
            bucketID = as.factor(bucketID))
 }
 
-# This function generates a dataframe of initial activity and stress scores and
+# This function generates a dataframe stress scores and
 # joins said dataframe to the &#39;master&#39; IndividualData dataframe.
 add_stressData &lt;- function(datafile){
   # Import data
@@ -400,7 +400,7 @@ add_stressData &lt;- function(datafile){
            droop = Droop_score) %&gt;%
     mutate(combinedID = paste(bucketID, cukeID))
   
-  # Generate initial data values for activity, droop, and squeeze based on the 
+  # Generate initial data values for droop and squeeze based on the 
   # readings taken on the first day of the experiment.
   initial_stress_values &lt;- StressData %&gt;%
    # dplyr method of doing: filter(date_time == &quot;2021-11-09 09:40:00&quot;) 
@@ -440,7 +440,7 @@ add_weightData(&quot;SizeData.csv&quot;)</code></pre>
 </div>
 <div id="second-we-read-in-longitudinal-data-frames-with-behaviours-measured-over-time" class="section level2">
 <h2>Second, we read in longitudinal data frames with behaviours measured over time</h2>
-<p>This data will later be used for activity score &amp; stiffness analysis</p>
+<p>This data will later be used for stiffness analysis</p>
 <pre class="r"><code>behav = read_csv(&quot;data/BehaviourData_Final.csv&quot;) %&gt;% 
   mutate(
          Treatment=fct_relevel(Treatment, c(&quot;Control&quot;,&quot;Room&quot;,&quot;Heat&quot;)),
@@ -496,7 +496,6 @@ lesion_max = merge(lesion_max, size, by=c(&quot;Unique_ID&quot;))</code></pre>
 # in the death column (only done for cucumbers that died).
 DeathData &lt;- IndividualData %&gt;%
   dplyr::mutate(death_time = gsub(&quot;.{1,}&quot;, 1, death_time)) %&gt;%
-  # initial activity has NA values, remove it from the dataframe
   dplyr::select(-in_activity)
 
 # Replace NA values in the death_time colum with 0s.
@@ -513,8 +512,8 @@ DeathData &lt;- DeathData %&gt;%
   dplyr::select(-c(Activity_Score, Number_lesions, &#39;Bodywall lesions&#39;)) %&gt;%
   na.omit()</code></pre>
 </div>
-<div id="data-for-spawning" class="section level2">
-<h2>Data for spawning =</h2>
+<div id="data-for-spawning-spawndata" class="section level2">
+<h2>Data for spawning = spawnData</h2>
 <pre class="r"><code># This function generates a dataframe that our spawning statistical analysis 
 # uses. `dplyr` functions that conflict with other packages are captioned 
 # explicity .
