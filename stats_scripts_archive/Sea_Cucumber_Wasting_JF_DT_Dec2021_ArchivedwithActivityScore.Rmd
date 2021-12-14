@@ -3,8 +3,8 @@ title: "Sea_Cucumber_Wasting_JF_DT_Dec2021"
 author: "Jonathan Farr and Declan Taylor"
 date: "12/12/2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -356,6 +356,16 @@ stiff = behav %>%
 ```
 
 
+
+## Data for activity = Act
+
+```{r, warning=FALSE, message=FALSE}
+Act = behav %>% 
+  dplyr::select(-c(Number_lesions, 'Bodywall lesions')) %>%
+  na.omit()
+```
+
+
 ## Data for spawning = 
 
 ```{r, warning=FALSE, message=FALSE}
@@ -617,6 +627,45 @@ Droop_Top = ordinal::clmm(as.factor(Droop_score)~ Treatment + as.factor(Date) +
 summary(Droop_Top)
 ```
 
+
+## Activity
+Use a series of kruskal wallis tests (followed up with a Dunn test when differences are significant) 
+We then used a zero adjusted negative binomial regression to model differences in activity score 
+```{r, warning=FALSE}
+# running kruskal-wallis tests to look for overall differences in treatments
+# Day 1 - p =0.32
+kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-09"))
+# Day 2 - p = 0.0448
+kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-10"))
+# Day 5 - p = 0.169
+kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-13"))
+# Day 12 (after recovery) - p = 0.4
+kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-20"))
+
+# running Dunn tests to compare treatments on 11-09, which was significant
+FSA::dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date=="2021-11-09")) 
+# no significant differences 
+
+
+# finding the distribution that best fits our response variable (activity score) 
+fitDist(Activity_Score, data=Act, type="counts", try.gamlss=TRUE)
+# zero adjusted negative binomial distribution is the best
+
+# only include dates from Nov 9 to Nov 13
+# aka the day before, days during, and day after the heat treatment
+Act_heat = subset(Act, Date < "2021-11-15")
+
+Act_Full = gamlss(Activity_Score ~  Treatment + as.factor(Date) + Treatment*as.factor(Date) 
+                  + random(as.factor(Unique_ID)) + random(as.factor(Table_ID)) + random(as.factor(Bucket_ID)),
+                  family = ZANBI(), data = Act_heat)
+
+# backward model selection
+step.Act.backward <- stepGAIC(Act_Full, direction = "backward", trace = F)
+
+formula(step.Act.backward) # get the final formula
+summary(step.Act.backward)
+```
+
 ## Spawning Statistics
 To look at per-bucket spawning we simply use KW tests and observed no differences
 ```{r, warning=FALSE}
@@ -662,7 +711,7 @@ summary(backward.evisc.mod)
 # Figures
 
 
-## Figure 3 - temperature trends
+## Figure 4 - temperature trends
 ```{r, warning=FALSE}
 
 TempPlot <- ggplot(data = Temp_Time,
@@ -694,12 +743,12 @@ TempPlot <- ggplot(data = Temp_Time,
   theme_bw()+ 
   theme(panel.grid=element_blank())
 
-ggsave("Fig3_temp_plot.png", TempPlot, device = "png", path = here("figures"), width=8, height=5)
+ggsave("Fig4_temp_plot.png", TempPlot, device = "png", path = here("figures"), width=8, height=5)
 ```
 
-## Figure 4 and 5 Stiffness
-Figure 4 = antipredator stiffness
-Figure 5 = structural stiffness
+## Figure 5 & 6 Stiffness
+Figure 5 = antipredator stiffness
+Figure 6 = structural stiffness
 
 ```{r, warning=FALSE}
 # making data for plotting 
@@ -712,7 +761,7 @@ stiff_plot = stiff %>%
 facet.labs=c("12°C", "17°C", "22°C")
 names(facet.labs)=c("Control", "Room", "Heat")
 
-# FIGURE 4
+# FIGURE 5
 # plotting antipredator response 
 squeeze_plot = 
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Squeeze_score))+
@@ -729,9 +778,9 @@ squeeze_plot =
         legend.position="right")+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave("figures/Fig4_antipredator_stiffness.jpg",plot=squeeze_plot, width=6, height=5)
+ggsave("figures/Fig5_antipredator_stiffness.jpg",plot=squeeze_plot, width=6, height=5)
 
-# FIGURE 5
+# FIGURE 6
 # plotting structural maintenance
 droop_plot = 
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Droop_score))+
@@ -748,9 +797,28 @@ droop_plot =
         legend.position="right")+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave("figures/Fig5_structural_stiffness.jpg",plot=droop_plot, width=6, height=5)
+ggsave("figures/Fig6_structural_stiffness.jpg",plot=droop_plot, width=6, height=5)
 
 
+```
+
+
+## Figure 7: Activity Scores
+```{r, warning=FALSE}
+Activity_plot = 
+  ggplot(data =Act, aes(x=as.factor(Date), y=Activity_Score, fill=Treatment))+
+  geom_boxplot(color="black") +
+  scale_x_discrete(breaks=c("2021-11-09", "2021-11-10","2021-11-11","2021-11-12","2021-11-13","2021-11-15","2021-11-20"),
+                   labels=c(1,2,3,4,5,7,12))+
+  geom_segment(aes(x = 1.5, y = -1, xend = 1.5, yend = 15), size=1,linetype=2)+
+  geom_segment(aes(x = 4.5, y = -1, xend = 4.5, yend = 15), size=1, linetype=2)+
+  scale_y_continuous(expand=c(0,0), limits = c(-1,15))+
+  scale_fill_manual(labels=c("12?C","17?C","22?C"), values=c("Gold", "Orange","Red"))+
+  ylab("Activity Scores")+xlab("Day")+
+  theme_bw()+
+  theme(panel.grid=element_blank())
+
+ggsave("figures/Fig7_activity.jpg",plot=Activity_plot, width=6, height=4)
 ```
 
 

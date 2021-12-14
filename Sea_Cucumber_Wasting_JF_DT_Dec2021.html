@@ -513,12 +513,6 @@ DeathData &lt;- DeathData %&gt;%
   dplyr::select(-c(Activity_Score, Number_lesions, &#39;Bodywall lesions&#39;)) %&gt;%
   na.omit()</code></pre>
 </div>
-<div id="data-for-activity-act" class="section level2">
-<h2>Data for activity = Act</h2>
-<pre class="r"><code>Act = behav %&gt;% 
-  dplyr::select(-c(Number_lesions, &#39;Bodywall lesions&#39;)) %&gt;%
-  na.omit()</code></pre>
-</div>
 <div id="data-for-spawning" class="section level2">
 <h2>Data for spawning =</h2>
 <pre class="r"><code># This function generates a dataframe that our spawning statistical analysis 
@@ -982,216 +976,6 @@ summary(Droop_Top)</code></pre>
 ## 0|1  -7.5304     0.8297  -9.077
 ## 1|2  -4.8521     0.6942  -6.989</code></pre>
 </div>
-<div id="activity" class="section level2">
-<h2>Activity</h2>
-<p>Use a series of kruskal wallis tests (followed up with a Dunn test when differences are significant) We then used a zero adjusted negative binomial regression to model differences in activity score</p>
-<pre class="r"><code># running kruskal-wallis tests to look for overall differences in treatments
-# Day 1 - p =0.32
-kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date==&quot;2021-11-09&quot;))</code></pre>
-<pre><code>## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Activity_Score by Treatment
-## Kruskal-Wallis chi-squared = 2.2841, df = 2, p-value = 0.3192</code></pre>
-<pre class="r"><code># Day 2 - p = 0.0448
-kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date==&quot;2021-11-10&quot;))</code></pre>
-<pre><code>## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Activity_Score by Treatment
-## Kruskal-Wallis chi-squared = 6.2105, df = 2, p-value = 0.04481</code></pre>
-<pre class="r"><code># Day 5 - p = 0.169
-kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date==&quot;2021-11-13&quot;))</code></pre>
-<pre><code>## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Activity_Score by Treatment
-## Kruskal-Wallis chi-squared = 3.5526, df = 2, p-value = 0.1693</code></pre>
-<pre class="r"><code># Day 12 (after recovery) - p = 0.4
-kruskal.test(Activity_Score ~ Treatment, data=subset(Act, Date==&quot;2021-11-20&quot;))</code></pre>
-<pre><code>## 
-##  Kruskal-Wallis rank sum test
-## 
-## data:  Activity_Score by Treatment
-## Kruskal-Wallis chi-squared = 1.806, df = 2, p-value = 0.4054</code></pre>
-<pre class="r"><code># running Dunn tests to compare treatments on 11-09, which was significant
-FSA::dunnTest(Activity_Score ~ Treatment, data=subset(Act, Date==&quot;2021-11-09&quot;)) </code></pre>
-<pre><code>## Dunn (1964) Kruskal-Wallis multiple comparison</code></pre>
-<pre><code>##   p-values adjusted with the Holm method.</code></pre>
-<pre><code>##       Comparison         Z   P.unadj     P.adj
-## 1 Control - Heat 0.3776472 0.7056927 0.7056927
-## 2 Control - Room 1.4628789 0.1435005 0.4305015
-## 3    Heat - Room 1.0415538 0.2976186 0.5952372</code></pre>
-<pre class="r"><code># no significant differences 
-
-
-# finding the distribution that best fits our response variable (activity score) 
-fitDist(Activity_Score, data=Act, type=&quot;counts&quot;, try.gamlss=TRUE)</code></pre>
-<pre><code>## 
-  |                                                                            
-  |                                                                      |   0%
-  |                                                                            
-  |==                                                                    |   3%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
-  |=======                                                               |   9%
-  |                                                                            
-  |=========                                                             |  12%
-  |                                                                            
-  |===========                                                           |  16%
-  |                                                                            
-  |=============                                                         |  19%
-  |                                                                            
-  |===============                                                       |  22%
-  |                                                                            
-  |==================                                                    |  25%
-  |                                                                            
-  |====================                                                  |  28%
-  |                                                                            
-  |======================                                                |  31%
-  |                                                                            
-  |========================                                              |  34%
-  |                                                                            
-  |==========================                                            |  38%
-  |                                                                            
-  |============================                                          |  41%
-  |                                                                            
-  |===============================                                       |  44%
-  |                                                                            
-  |=================================                                     |  47%
-  |                                                                            
-  |===================================                                   |  50%
-  |                                                                            
-  |=====================================                                 |  53%
-  |                                                                            
-  |=======================================                               |  56%
-  |                                                                            
-  |==========================================                            |  59%
-  |                                                                            
-  |============================================                          |  62%
-  |                                                                            
-  |==============================================                        |  66%
-  |                                                                            
-  |================================================                      |  69%Error in solve.default(oout$hessian) : 
-##   Lapack routine dgesv: system is exactly singular: U[2,2] = 0
-## 
-  |                                                                            
-  |==================================================                    |  72%
-  |                                                                            
-  |====================================================                  |  75%
-  |                                                                            
-  |=======================================================               |  78%
-  |                                                                            
-  |=========================================================             |  81%
-  |                                                                            
-  |===========================================================           |  84%
-  |                                                                            
-  |=============================================================         |  88%
-  |                                                                            
-  |===============================================================       |  91%
-  |                                                                            
-  |==================================================================    |  94%
-  |                                                                            
-  |====================================================================  |  97%
-  |                                                                            
-  |======================================================================| 100%</code></pre>
-<pre><code>## 
-## Family:  c(&quot;ZANBI&quot;, &quot;Zero Altered Negative binomial type I&quot;) 
-## Fitting method: &quot;nlminb&quot; 
-## 
-## Call:  gamlssML(formula = y, family = DIST[i]) 
-## 
-## Mu Coefficients:
-## [1]  1.612
-## Sigma Coefficients:
-## [1]  -1.281
-## Nu Coefficients:
-## [1]  -1.236
-## 
-##  Degrees of Freedom for the fit: 3 Residual Deg. of Freedom   348 
-## Global Deviance:     1723.59 
-##             AIC:     1729.59 
-##             SBC:     1741.17</code></pre>
-<pre class="r"><code># zero adjusted negative binomial distribution is the best
-
-# only include dates from Nov 9 to Nov 13
-# aka the day before, days during, and day after the heat treatment
-Act_heat = subset(Act, Date &lt; &quot;2021-11-15&quot;)
-
-Act_Full = gamlss(Activity_Score ~  Treatment + as.factor(Date) + Treatment*as.factor(Date) 
-                  + random(as.factor(Unique_ID)) + random(as.factor(Table_ID)) + random(as.factor(Bucket_ID)),
-                  family = ZANBI(), data = Act_heat)</code></pre>
-<pre><code>## GAMLSS-RS iteration 1: Global Deviance = 1168.733 
-## GAMLSS-RS iteration 2: Global Deviance = 1154.591 
-## GAMLSS-RS iteration 3: Global Deviance = 1150.124 
-## GAMLSS-RS iteration 4: Global Deviance = 1149.534 
-## GAMLSS-RS iteration 5: Global Deviance = 1149.344 
-## GAMLSS-RS iteration 6: Global Deviance = 1149.276 
-## GAMLSS-RS iteration 7: Global Deviance = 1149.259 
-## GAMLSS-RS iteration 8: Global Deviance = 1149.255 
-## GAMLSS-RS iteration 9: Global Deviance = 1149.255</code></pre>
-<pre class="r"><code># backward model selection
-step.Act.backward &lt;- stepGAIC(Act_Full, direction = &quot;backward&quot;, trace = F)</code></pre>
-<pre><code>## Start:  AIC= 1237.64 
-##  Activity_Score ~ Treatment + as.factor(Date) + Treatment * as.factor(Date) +  
-##     random(as.factor(Unique_ID)) + random(as.factor(Table_ID)) +  
-##     random(as.factor(Bucket_ID))</code></pre>
-<pre class="r"><code>formula(step.Act.backward) # get the final formula</code></pre>
-<pre><code>## Activity_Score ~ as.factor(Date) + random(as.factor(Unique_ID))</code></pre>
-<pre class="r"><code>summary(step.Act.backward)</code></pre>
-<pre><code>## ******************************************************************
-## Family:  c(&quot;ZANBI&quot;, &quot;Zero Altered Negative binomial type I&quot;) 
-## 
-## Call:  gamlss(formula = Activity_Score ~ as.factor(Date) +  
-##     random(as.factor(Unique_ID)), family = ZANBI(),  
-##     data = Act_heat, trace = FALSE) 
-## 
-## Fitting method: RS() 
-## 
-## ------------------------------------------------------------------
-## Mu link function:  log
-## Mu Coefficients:
-##                           Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)                1.77987    0.07401  24.051  &lt; 2e-16 ***
-## as.factor(Date)2021-11-10  0.02792    0.10861   0.257  0.79734    
-## as.factor(Date)2021-11-11 -0.28874    0.11188  -2.581  0.01051 *  
-## as.factor(Date)2021-11-12 -0.33137    0.10935  -3.030  0.00274 ** 
-## as.factor(Date)2021-11-13 -0.32827    0.12618  -2.602  0.00991 ** 
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## ------------------------------------------------------------------
-## Sigma link function:  log
-## Sigma Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  -2.8587     0.5247  -5.449 1.36e-07 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## ------------------------------------------------------------------
-## Nu link function:  logit 
-## Nu Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)   -1.052      0.143  -7.358 3.68e-12 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## ------------------------------------------------------------------
-## NOTE: Additive smoothing terms exist in the formulas: 
-##  i) Std. Error for smoothers are for the linear effect only. 
-## ii) Std. Error for the linear terms maybe are not accurate. 
-## ------------------------------------------------------------------
-## No. of observations in the fit:  255 
-## Degrees of Freedom for the fit:  35.48064
-##       Residual Deg. of Freedom:  219.5194 
-##                       at cycle:  10 
-##  
-## Global Deviance:     1156.342 
-##             AIC:     1227.304 
-##             SBC:     1352.95 
-## ******************************************************************</code></pre>
-</div>
 <div id="spawning-statistics" class="section level2">
 <h2>Spawning Statistics</h2>
 <p>To look at per-bucket spawning we simply use KW tests and observed no differences</p>
@@ -1276,8 +1060,8 @@ summary(backward.evisc.mod)</code></pre>
 </div>
 <div id="figures" class="section level1">
 <h1>Figures</h1>
-<div id="figure-4---temperature-trends" class="section level2">
-<h2>Figure 4 - temperature trends</h2>
+<div id="figure-3---temperature-trends" class="section level2">
+<h2>Figure 3 - temperature trends</h2>
 <pre class="r"><code>TempPlot &lt;- ggplot(data = Temp_Time,
             aes(x = date_time,
                 y = temp_C,
@@ -1307,11 +1091,11 @@ summary(backward.evisc.mod)</code></pre>
   theme_bw()+ 
   theme(panel.grid=element_blank())
 
-ggsave(&quot;Fig4_temp_plot.png&quot;, TempPlot, device = &quot;png&quot;, path = here(&quot;figures&quot;), width=8, height=5)</code></pre>
+ggsave(&quot;Fig3_temp_plot.png&quot;, TempPlot, device = &quot;png&quot;, path = here(&quot;figures&quot;), width=8, height=5)</code></pre>
 </div>
-<div id="figure-5-6-stiffness" class="section level2">
-<h2>Figure 5 &amp; 6 Stiffness</h2>
-<p>Figure 5 = antipredator stiffness Figure 6 = structural stiffness</p>
+<div id="figure-4-and-5-stiffness" class="section level2">
+<h2>Figure 4 and 5 Stiffness</h2>
+<p>Figure 4 = antipredator stiffness Figure 5 = structural stiffness</p>
 <pre class="r"><code># making data for plotting 
 stiff_plot = stiff %&gt;%
   dplyr::mutate(Squeeze_score = as.factor(Squeeze_score),
@@ -1322,7 +1106,7 @@ stiff_plot = stiff %&gt;%
 facet.labs=c(&quot;12°C&quot;, &quot;17°C&quot;, &quot;22°C&quot;)
 names(facet.labs)=c(&quot;Control&quot;, &quot;Room&quot;, &quot;Heat&quot;)
 
-# FIGURE 5
+# FIGURE 4
 # plotting antipredator response 
 squeeze_plot = 
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Squeeze_score))+
@@ -1339,9 +1123,9 @@ squeeze_plot =
         legend.position=&quot;right&quot;)+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave(&quot;figures/Fig5_antipredator_stiffness.jpg&quot;,plot=squeeze_plot, width=6, height=5)
+ggsave(&quot;figures/Fig4_antipredator_stiffness.jpg&quot;,plot=squeeze_plot, width=6, height=5)
 
-# FIGURE 6
+# FIGURE 5
 # plotting structural maintenance
 droop_plot = 
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Droop_score))+
@@ -1358,24 +1142,7 @@ droop_plot =
         legend.position=&quot;right&quot;)+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave(&quot;figures/Fig6_structural_stiffness.jpg&quot;,plot=droop_plot, width=6, height=5)</code></pre>
-</div>
-<div id="figure-7-activity-scores" class="section level2">
-<h2>Figure 7: Activity Scores</h2>
-<pre class="r"><code>Activity_plot = 
-  ggplot(data =Act, aes(x=as.factor(Date), y=Activity_Score, fill=Treatment))+
-  geom_boxplot(color=&quot;black&quot;) +
-  scale_x_discrete(breaks=c(&quot;2021-11-09&quot;, &quot;2021-11-10&quot;,&quot;2021-11-11&quot;,&quot;2021-11-12&quot;,&quot;2021-11-13&quot;,&quot;2021-11-15&quot;,&quot;2021-11-20&quot;),
-                   labels=c(1,2,3,4,5,7,12))+
-  geom_segment(aes(x = 1.5, y = -1, xend = 1.5, yend = 15), size=1,linetype=2)+
-  geom_segment(aes(x = 4.5, y = -1, xend = 4.5, yend = 15), size=1, linetype=2)+
-  scale_y_continuous(expand=c(0,0), limits = c(-1,15))+
-  scale_fill_manual(labels=c(&quot;12?C&quot;,&quot;17?C&quot;,&quot;22?C&quot;), values=c(&quot;Gold&quot;, &quot;Orange&quot;,&quot;Red&quot;))+
-  ylab(&quot;Activity Scores&quot;)+xlab(&quot;Day&quot;)+
-  theme_bw()+
-  theme(panel.grid=element_blank())
-
-ggsave(&quot;figures/Fig7_activity.jpg&quot;,plot=Activity_plot, width=6, height=4)</code></pre>
+ggsave(&quot;figures/Fig5_structural_stiffness.jpg&quot;,plot=droop_plot, width=6, height=5)</code></pre>
 </div>
 <div id="figure-s1-max-minor-ulcers-across-treatments" class="section level2">
 <h2>Figure S1: Max minor ulcers across treatments</h2>
