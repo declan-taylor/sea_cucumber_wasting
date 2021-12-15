@@ -3,8 +3,8 @@ title: "Sea_Cucumber_Wasting_JF_DT_Dec2021"
 author: "Jonathan Farr and Declan Taylor"
 date: "12/12/2021"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -77,7 +77,8 @@ Temp_Time <- DailyLog %>%
 
 
 ## Binary data for analyses and figures related to mortality, spawning, ulcers and evisceration 
-Functions that generate data frames withdeath_time, spawning, evisceration, and poop data. 
+
+Functions that generate data frames with death_time, spawning, evisceration, and poop data. 
 The function exists so the dataframe can be  easily made in one click.
 ```{r, warning=FALSE, message=FALSE}
 create_individualData <- function(datafile){
@@ -271,22 +272,7 @@ add_stressData("BehaviourData_final.csv")
 add_weightData("SizeData.csv")
 ```
 
-## Second, we read in longitudinal data frames with behaviours measured over time 
-This data will later be used for stiffness analysis
-```{r,, warning=FALSE, message=FALSE}
-behav = read_csv("data/BehaviourData_Final.csv") %>% 
-  mutate(
-         Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
-         Bucket_ID = as.factor(Bucket_ID),
-         Cuke_ID=as.factor(Cuke_ID),
-         Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
-         Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
-         Date = as.Date(Date, format="%d-%m-%Y")) %>%
-  dplyr:: select(-c(Sea_Table, Table_Position))
-
-```
-
-## Data for ulcer analysis
+## Ulcers
 ```{r, warning=FALSE, message=FALSE}
 lesion = read_csv("data/BehaviourData_Final.csv") %>%
   mutate(
@@ -328,7 +314,7 @@ lesion_max = merge(lesion_max, size, by=c("Unique_ID"))
 ```
 
 
-## Data for mortality analysis = DeathData
+## Mortality: df = DeathData
 ```{r, warning=FALSE, message=FALSE}
 # Restrict the IndividualData dataframe just to cucumbers that had a comment
 # in the death column (only done for cucumbers that died).
@@ -346,7 +332,22 @@ DeathData <- DeathData %>%
 
 ```
 
-## Data for stiffness = stiff
+## Stiffness: df = stiff
+
+We read in longitudinal data frames with behaviours measured over time, as this data will later be used for stiffness analysis
+```{r,, warning=FALSE, message=FALSE}
+behav = read_csv("data/BehaviourData_Final.csv") %>% 
+  mutate(
+         Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
+         Bucket_ID = as.factor(Bucket_ID),
+         Cuke_ID=as.factor(Cuke_ID),
+         Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
+         Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
+         Date = as.Date(Date, format="%d-%m-%Y")) %>%
+  dplyr:: select(-c(Sea_Table, Table_Position))
+
+```
+
 ```{r, warning=FALSE, message=FALSE}
 stiff = behav %>%
   dplyr::select(-c(Activity_Score, Number_lesions, 'Bodywall lesions')) %>%
@@ -355,7 +356,7 @@ stiff = behav %>%
 ```
 
 
-## Data for spawning = spawnData
+## Spawning: df = spawnData
 
 ```{r, warning=FALSE, message=FALSE}
 
@@ -469,7 +470,7 @@ create_spermData("DailyLog_final.csv")
 ```
 
 
-## Data for evisceration = EviscData
+## Evisceration: df = EviscData
 ```{r, warning=FALSE}
 # Drop the final row (all NAs) and the death_time and in_activity columns 
 # (contain NAs) from `IndividualData`, so we can use gamlss models.
@@ -483,8 +484,10 @@ EviscData <- IndividualData %>%
 
 
 # Running analyses 
-Now, we use our data frames generated above to conduct analyses on our data 
-First - load in the packages used for analyses
+
+We use our data frames generated above to conduct analyses on our data. The results of statistical tests and analyses are commented out below the approriate line of code in each function. 
+
+The following statistical packages are required for our analyses:
 ```{r, warning=FALSE, message=FALSE}
 library(gamlss)
 library(FSA)
@@ -497,8 +500,8 @@ library(Hmisc)
 
 
 ## Temperature trends 
-making sure that temps were different in our treatments
-Using a KW test to make sure 
+
+Done to make sure that temps were different in our treatments (statistically confirmed with a K-W test).
 ```{r, warning=FALSE}
 # Investigating the range and average temperatures of our 3 treatments.
 
@@ -525,6 +528,7 @@ kruskal.test(temp_C ~treatment, data = tempRange)
 
 
 ## Ulcer Statistics
+
 Conducting regression analyses for differences in minor ulcers across temperature treatments
 ```{r, warning=FALSE}
 # we are using the data frame lesion_max
@@ -549,6 +553,7 @@ summary(step.lesions.backward) # null model is best fit
 
 
 ## Mortality Statistics
+
 Using a kruskal-wallis test to examine differences in mortality across temperature treatments
 We also used logistic regression to test for within-treatment factors affecting survival 
 ```{r, warning=FALSE}
@@ -581,10 +586,11 @@ summary(backward.death.mod)
 
 
 ## Stiffness Statistics
-First, we examine the correlation between the two stiffness scores with rcorr. 
-Then, we use clmm() from ordinal package to analyze data
-We also use dredge from MuMIn to do model selection (code not run because of long processing times)
-** Droop = posture maintenance, Squeeze = antipredator**
+
+First, we examine the correlation between the two stiffness scores with the rcorr() function. Then, we use clmm() from the `ordinal` package to analyze data. We use dredge() from the MuMIn package to do model selection (code not run because of long processing times)
+
+Note that Droop = stiffness for posture maintenance, Squeeze = stiffness for antipredator defense.
+
 ```{r, warning=FALSE}
 # examining correlation between droop and squeeze
 Hmisc::rcorr(stiff$Squeeze_score,stiff$Droop_score, type="spearman") 
@@ -625,7 +631,8 @@ summary(Droop_Top)
 ```
 
 ## Spawning Statistics
-To look at per-bucket spawning we simply use KW tests and observed no differences
+
+To look at per-bucket spawning we use KW tests and observed no differences.
 ```{r, warning=FALSE}
 # Find the number of cucumber bins that spawned.
 sum(spawnData$spawn)
@@ -639,8 +646,8 @@ FSA::dunnTest(spawn ~ treatment, data = spawnData)
 
 
 ## Evisceration Statistics
-We model the effect of treatment, weight, and guts status, along with random effects, on evisceration
 
+We model the effect of treatment, weight, and defecation status, along with random effects, on evisceration.
 ```{r, warning=FALSE}
 sum(EviscData$evisceration)
 # N = 12 eviscerated <- should be n=13
@@ -668,6 +675,7 @@ summary(backward.evisc.mod)
 
 # Figures
 
+Figures 1 and 2, which are multipanel figures of images, were made in Microsoft Powerpoint. The powerpoint file and individual images are included in our git repository.
 
 ## Figure 3 - temperature trends
 ```{r, warning=FALSE}
@@ -704,7 +712,8 @@ TempPlot <- ggplot(data = Temp_Time,
 ggsave("Fig3_temp_plot.png", TempPlot, device = "png", path = here("figures"), width=8, height=5)
 ```
 
-## Figure 4 and 5 Stiffness
+## Figure 4, 5 - Stiffness
+
 Figure 4 = antipredator stiffness
 Figure 5 = posture stiffness
 
