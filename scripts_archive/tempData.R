@@ -35,36 +35,36 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 # Making a new dataframe to get some values about the range and variation in our
 # temperature data.
 tempRange <- DailyLog %>%
-  filter(date == "2021-11-11" | date == "2021-11-12") %>%
+  filter(date == "2021-11-10" | date == "2021-11-11" | date == "2021-11-12") %>%
   select(date, date_time, tableID, treatment, temp_C) %>%
-  filter(treatment == "room")
+  filter(treatment == "control")
 
 # Investigating the range and average temperatures of our 3 treatments.
 range(tempRange$temp_C)
 mean(tempRange$temp_C)
-# FOR CONTROL: 11.2 to 14.0, mean = 12.5
-# FOR ROOM: 14.9 to 17.9, mean = 16.79
-# FOR HEAT: 20.0 to 23.3, mean =  21.86
+# FOR CONTROL: 10.8 to 14.0, mean = 12.38
+# FOR ROOM: 14.8 to 17.9, mean = 16.58
+# FOR HEAT: 19.6 to 23.3, mean =  21.71
 
 # A statistical test to determine if the temperature treatments are significantly 
 # different from each other, on the 11th and 12th of November, when no temp
 # ramping was done.
 tempStats <- DailyLog %>%
-  filter(date == "2021-11-11" | date == "2021-11-12") %>%
+  filter(date == "2021-11-10" | date == "2021-11-11" | date == "2021-11-12") %>%
   #group_by(treatment) %>%
   #mutate(mean_temp = mean(temp_C)) %>%
   select(date,
          bucketID,
          treatment,
-         temp_C) #%>%
-  #distinct(bucketID, .keep_all = TRUE)
+         temp_C)
+
 shapiro.test(tempStats$temp_C)
-# p = 6.821e-15
-tempKW <- kruskal.test(temp_C ~ treatment, data = tempStats)
+# p < 2.2e-16
+kruskal.test(temp_C ~ treatment, data = tempStats)
 # p < 2.2e-16
 FSA::dunnTest(temp_C ~ treatment, data = tempStats)
-# control-room p = 3.96e-17
-# heat-room p = 2.26e-19
+# control-room p = 39.96e-26
+# heat-room p = 2.32e-27
 
 # Generating a list of the times at which the 5 cucumbers died.
 death_time <- DailyLog %>%
