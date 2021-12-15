@@ -56,7 +56,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 # Making a new dataframe to get some values about the range and variation in our
 # temperature data.
 tempRange <- DailyLog %>%
-  filter(date == "2021-11-11" | date == "2021-11-12") %>%
+  filter(date == "2021-11-11" | date == "2021-11-12" | date =="2021-11-10") %>%
   select(date, date_time, tableID, treatment, temp_C) 
 
 # Generating a list of the times at which the 5 cucumbers died.
@@ -498,6 +498,7 @@ library(Hmisc)
 
 ## Temperature trends 
 making sure that temps were different in our treatments
+Using a KW test to make sure 
 ```{r, warning=FALSE}
 # Investigating the range and average temperatures of our 3 treatments.
 
@@ -512,6 +513,13 @@ mean(subset(tempRange, treatment=="room")$temp_C)
 # 22C
 range(subset(tempRange, treatment=="heat")$temp_C) 
 mean(subset(tempRange, treatment=="heat")$temp_C)
+
+# testing for normality, data is NOT normal
+shapiro.test(tempRange$temp_C)
+
+# differences are highly significant 
+kruskal.test(temp_C ~treatment, data = tempRange)
+# p < 2.2e-16
 
 ```
 
