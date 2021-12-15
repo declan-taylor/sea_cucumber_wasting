@@ -3,8 +3,8 @@ title: "Sea_Cucumber_Wasting_JF_DT_Dec2021"
 author: "Jonathan Farr and Declan Taylor"
 date: "12/12/2021"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -56,7 +56,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 # Making a new dataframe to get some values about the range and variation in our
 # temperature data.
 tempRange <- DailyLog %>%
-  filter(date == "2021-11-11" | date == "2021-11-12") %>%
+  filter(date == "2021-11-11" | date == "2021-11-12" | date =="2021-11-10") %>%
   select(date, date_time, tableID, treatment, temp_C) 
 
 # Generating a list of the times at which the 5 cucumbers died.
@@ -498,6 +498,7 @@ library(Hmisc)
 
 ## Temperature trends 
 making sure that temps were different in our treatments
+Using a KW test to make sure 
 ```{r, warning=FALSE}
 # Investigating the range and average temperatures of our 3 treatments.
 
@@ -512,6 +513,13 @@ mean(subset(tempRange, treatment=="room")$temp_C)
 # 22C
 range(subset(tempRange, treatment=="heat")$temp_C) 
 mean(subset(tempRange, treatment=="heat")$temp_C)
+
+# testing for normality, data is NOT normal
+shapiro.test(tempRange$temp_C)
+
+# differences are highly significant 
+kruskal.test(temp_C ~treatment, data = tempRange)
+# p < 2.2e-16
 
 ```
 
@@ -576,7 +584,7 @@ summary(backward.death.mod)
 First, we examine the correlation between the two stiffness scores with rcorr. 
 Then, we use clmm() from ordinal package to analyze data
 We also use dredge from MuMIn to do model selection (code not run because of long processing times)
-** Droop = structural maintenance, Squeeze = antipredator**
+** Droop = posture maintenance, Squeeze = antipredator**
 ```{r, warning=FALSE}
 # examining correlation between droop and squeeze
 Hmisc::rcorr(stiff$Squeeze_score,stiff$Droop_score, type="spearman") 
@@ -698,7 +706,7 @@ ggsave("Fig3_temp_plot.png", TempPlot, device = "png", path = here("figures"), w
 
 ## Figure 4 and 5 Stiffness
 Figure 4 = antipredator stiffness
-Figure 5 = structural stiffness
+Figure 5 = posture stiffness
 
 ```{r, warning=FALSE}
 # making data for plotting 
@@ -731,15 +739,15 @@ squeeze_plot =
 ggsave("figures/Fig4_antipredator_stiffness.jpg",plot=squeeze_plot, width=6, height=5)
 
 # FIGURE 5
-# plotting structural maintenance
-droop_plot = 
+# plotting posture maintenance
+droop_plot =
   ggplot(data =stiff_plot, aes(x=as.factor(Date), fill=Droop_score))+
   geom_bar(alpha=0.8, color="black", size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-15", "2021-11-20"), labels=c(1,2,3,4,5,7,12))+
   xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
   geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
-  scale_fill_manual(name="Structural Stiffness",labels=c("0 - Soft","1 - Standard","2 - Stiff"), 
+  scale_fill_manual(name="Postural Stiffness",labels=c("0 - Soft","1 - Standard","2 - Stiff"), 
                     values=c("burlywood4", "tan", "beige"))+ 
   theme_bw()+
   theme(strip.text.y = element_text(size =12),
@@ -747,7 +755,7 @@ droop_plot =
         legend.position="right")+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave("figures/Fig5_structural_stiffness.jpg",plot=droop_plot, width=6, height=5)
+ggsave("figures/Fig5_postural_stiffness.jpg",plot=droop_plot, width=6, height=5)
 
 
 ```
@@ -775,7 +783,7 @@ ggsave("figures/FigS1_ulcers_max.jpg",plot=ulcers_max, width=6, height=5)
 ```
 
 
-## Figure S2 : Correlation between antipredator and structural stiffness
+## Figure S2 : Correlation between antipredator and Postural stiffness
 ```{r, warning=FALSE}
 
 squeeze_droop_cor = ggplot(data=stiff, aes(x=Squeeze_score, y=Droop_score, color=Treatment))+
@@ -784,7 +792,7 @@ squeeze_droop_cor = ggplot(data=stiff, aes(x=Squeeze_score, y=Droop_score, color
   theme_bw()+ 
   scale_x_continuous(breaks=seq(0,2.3,1), limits = c(-0.2,2.3))+
   scale_y_continuous(breaks=seq(0,2.3,1), limits = c(-0.2,2.3))+
-  xlab("Antipredator Defense") + ylab("Structural Maintenance")+
+  xlab("Antipredator Defense") + ylab("Postural Maintenance")+
   theme(strip.text.y = element_text(size =12),
         legend.position="NONE")+
   facet_grid(Treatment~., labeller=labeller(Treatment = facet.labs))
@@ -801,7 +809,7 @@ ggsave("figures/FigS2_squeeze_droop_correlation.jpg",plot=squeeze_droop_cor, wid
 droop_output = data.frame(coef = coef(Droop_Top), # coef
                           upper = confint(Droop_Top)[,2], # upper CI
                           lower = confint(Droop_Top)[,1], # lower CI
-                          stiff = "Structural Maintenance")[-c(1,2),]
+                          stiff = "Postural Maintenance")[-c(1,2),]
 squeeze_output = data.frame(coef = coef(Squeeze_Top), # coef
                           upper = confint(Squeeze_Top)[,2], # upper CI
                           lower = confint(Squeeze_Top)[,1], # lower CI
