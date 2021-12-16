@@ -722,7 +722,7 @@ squeeze_plot =
   xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
   geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
-  scale_fill_manual(name="Antipredator Stiffness",labels=c("0 - Soft","1 - Standard","2 - Stiff"), values=c("burlywood4", "tan", "beige"))+ 
+  scale_fill_manual(name="Antipredator Stiffness",labels=c("0 - Soft","1 - Moderate","2 - Stiff"), values=c("burlywood4", "tan", "beige"))+ 
   theme_bw()+
   theme(strip.text.y = element_text(size =12),
         panel.grid=element_blank(),
@@ -740,7 +740,7 @@ droop_plot =
   xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
   geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
-  scale_fill_manual(name="Structural Stiffness",labels=c("0 - Soft","1 - Standard","2 - Stiff"), 
+  scale_fill_manual(name="Structural Stiffness",labels=c("0 - Soft","1 - Moderate","2 - Stiff"), 
                     values=c("burlywood4", "tan", "beige"))+ 
   theme_bw()+
   theme(strip.text.y = element_text(size =12),
