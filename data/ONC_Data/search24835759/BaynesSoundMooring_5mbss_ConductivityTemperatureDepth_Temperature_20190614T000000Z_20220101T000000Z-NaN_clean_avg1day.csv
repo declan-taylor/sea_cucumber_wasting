@@ -1,18 +1,18 @@
 ## BEGIN HEADER
 #
 ##------------------------------------------------------------------------------
-## Origin Section - more information in Metadata file or Oceans 2.0
+## Origin Section - more information in Metadata file or Oceans 3.0
 ##------------------------------------------------------------------------------
 #SOURCE:   "Ocean Networks Canada Data Archive"  / Citation Author
 #HTTP:      http://www.oceannetworks.ca          / Citation Publication Site
 #HOME:     "University of Victoria, Canada"      / Citation Publication Location
-#FLDATE:    2022-01-27T17:06:13.079Z  / File Creation Date = Date for Citation
-#CITATION: "Ocean Networks Canada Data Archive, http://www.oceannetworks.ca, Temperature data from 14 Jun 2019 - 1 Jan 2022, University of Victoria, Canada, Downloaded on 27 Jan 2022"  / Citation Title
+#FLDATE:    2022-02-14T21:11:16.928Z  / File Creation Date = Date for Citation
+#CITATION: "Ocean Networks Canada Data Archive, http://www.oceannetworks.ca, Temperature data from 14 Jun 2019 - 1 Jan 2022, University of Victoria, Canada, Downloaded on 14 Feb 2022"  / Citation Title
 #METADATF:  BaynesSoundMooring_5mbss_ConductivityTemperatureDepth_Temperature_20190614T000000Z_20220101T000000Z-NaN_clean_avg1day_CSV_META.pdf  / Metadata file name
-#SEARCHID:  24835759                             / DMAS Search ID from Oceans2.0
+#SEARCHID:  25055235                             / DMAS Search ID from Oceans2.0
 #
 ##------------------------------------------------------------------------------
-## Location Section - more information in Metadata file or Oceans 2.0
+## Location Section - more information in Metadata file or Oceans 3.0
 ##------------------------------------------------------------------------------
 #STNNAME:   OceanNetworksCanada-Pacific-SalishSea-BaynesSound-BaynesSoundMooring-5mbss  / Station Name 
 #STNCODE:   BSM.J1                               / Station Code 
@@ -21,7 +21,7 @@
 #DEPTH:         5.0                              / Depth (m)
 #
 ##------------------------------------------------------------------------------
-## Device Section - more information in Metadata file or Oceans 2.0
+## Device Section - more information in Metadata file or Oceans 3.0
 ##------------------------------------------------------------------------------
 #DEVCAT: Conductivity Temperature Depth          / Device Category
 #DEVTOT:    4  / Total number of Device Deployments contributing to data
@@ -47,7 +47,7 @@
 #DEVID4:    23829                                / Device ID of Device 4
 #
 ##------------------------------------------------------------------------------
-## Data Section - more information in Metadata file or Oceans 2.0
+## Data Section - more information in Metadata file or Oceans 3.0
 ##------------------------------------------------------------------------------
 #DATEFROM:  2019-06-14T00:00:00.000Z             / Data Start Time
 #DATETO:    2022-01-01T00:00:00.000Z             / Data End Time
