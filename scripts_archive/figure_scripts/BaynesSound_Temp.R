@@ -30,3 +30,8 @@ Baynes05_temp_plot = ggplot(Baynes05, aes(x = Date, y = Temperature_C, color = T
   theme(legend.position = "none")
 
 Baynes05_temp_plot
+
+ggsave("Baynes Sound 5mbss Temp.pdf", 
+       BinaryPlot,
+       device = "pdf",
+       path = here("figures"))
