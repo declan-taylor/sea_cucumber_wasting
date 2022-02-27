@@ -56,7 +56,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 # Making a new dataframe to get some values about the range and variation in our
 # temperature data.
 tempRange <- DailyLog %>%
-  filter(date == "2021-11-11" | date == "2021-11-12") %>%
+  filter(date == "2021-11-10" | date == "2021-11-11"| date == "2021-11-12") %>%
   select(date, date_time, tableID, treatment, temp_C) 
 
 # Generating a list of the times at which the 5 cucumbers died.
@@ -514,6 +514,14 @@ mean(subset(tempRange, treatment=="room")$temp_C)
 range(subset(tempRange, treatment=="heat")$temp_C) 
 mean(subset(tempRange, treatment=="heat")$temp_C)
 
+shapiro.test(tempRange$temp_C) # temp data is not normal
+hist(log(tempRange$temp_C))
+
+kruskal.test(temp_C ~ treatment, data = tempRange) # kruskal wallis test for temp --> HIGHLY SIG
+FSA::dunnTest(temp_C ~ treatment, data = tempRange) # significant differences among all treatments
+
+
+
 ```
 
 
@@ -557,10 +565,9 @@ FSA::dunnTest(death ~ treatment, data = DeathData)
 # Full model, no random effects. BI() used as family as death is represented by
 # a 1, and survival a 0. Respiratory evisceration is omitted because all those
 # that eviscerated their respiratory tree died.
-death.mod.full <- gamlss(death ~ evisceration + poop + in_droop + in_squeeze + weight_g,
+death.mod.full <- gamlss(death ~ treatment + evisceration + poop + in_droop + in_squeeze + weight_g,
                     family = BI(),
-                    data = DeathData)
-
+                    data = DeathData) 
 # Forwards selection.
 backward.death.mod <- stepGAIC(death.mod.full, 
                           direction = "backward", 
