@@ -607,8 +607,8 @@ Droop_Full = ordinal::clmm(as.factor(Droop_score)~ Treatment + as.factor(Date) +
                     data = stiff_heat) 
 
 # model selection code, not run because of processing time
-#dredge.Droop <- MuMIn::dredge(Droop_Full) 
-#view(dredge.Droop) # again, top model does not include interaction term 
+dredge.Droop <- MuMIn::dredge(Droop_Full) 
+view(dredge.Droop) # again, top model does not include interaction term 
 
 # top model for droop score
 Droop_Top = ordinal::clmm(as.factor(Droop_score)~ Treatment + as.factor(Date) + 
@@ -740,7 +740,7 @@ droop_plot =
   xlab("Experiment Day") + ylab("Number of Sea Cucumbers")+
   geom_vline(xintercept=1.5, linetype=2, size=1)+ geom_vline(xintercept=4.5, linetype=2, size=1)+
   scale_y_continuous(expand=c(0,0))+
-  scale_fill_manual(name="Structural Stiffness",labels=c("0 - Soft","1 - Moderate","2 - Stiff"), 
+  scale_fill_manual(name="Postural Stiffness",labels=c("0 - Soft","1 - Moderate","2 - Stiff"), 
                     values=c("burlywood4", "tan", "beige"))+ 
   theme_bw()+
   theme(strip.text.y = element_text(size =12),
@@ -748,7 +748,7 @@ droop_plot =
         legend.position="right")+
   facet_grid(Treatment~.,labeller=labeller(Treatment = facet.labs))
 
-ggsave("figures/Fig5_structural_stiffness.jpg",plot=droop_plot, width=6, height=5)
+ggsave("figures/Fig5_postural_stiffness.jpg",plot=droop_plot, width=6, height=5)
 
 
 ```
@@ -765,7 +765,7 @@ ulcers_max = ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatm
   scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
   scale_x_discrete(labels=c("12°C", "17°C", "22°C"))+
   scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Maximum Lesions / Indiv.")+xlab("Treatment")+
+  ylab("Maximum Lesions per Sea Cucumber")+xlab("Treatment")+
   theme_bw()+
   theme(panel.grid=element_blank(), 
         legend.position="none")
