@@ -172,16 +172,23 @@ Baynes_temp_plot <- ggplot(data = NULL,
               aes(x = Date, y = Roll_Temp),
               col = "black", alpha = 0.8,
               size = 0.5, linetype = "dashed") +
-  geom_hline(yintercept = 17, color = "black", size = 1, alpha = 0.8) +
-  geom_hline(yintercept = 12, color = "dodgerblue1", size = 1, alpha = 0.6) +
-  geom_hline(yintercept = 22, color = "orangered1", size = 1, alpha = 0.6) +
+#  geom_hline(yintercept = 17, color = "black", size = 1, alpha = 0.8) +
+#  geom_hline(yintercept = 12, color = "dodgerblue1", size = 1, alpha = 0.6) +
+#  geom_hline(yintercept = 22, color = "orangered1", size = 1, alpha = 0.6) +
   geom_point(data = Baynes05_max, 
              aes(x = Date, y = Temperature_C)) +
+  geom_label_repel(data = subset(Baynes05, Temperature_C > 21.6),
+                   label = "Max Temp = 21.6ºC",
+                   nudge_x = -150, nudge_y = 1,
+                   label.r = 0.1,
+                   size = 3) + 
   labs(x = "Year",
        y = "Temperature (°C)",
        color = "Temperature (°C)") +
   theme_classic() +
   theme(legend.position = "none")
+
+Baynes_temp_plot
 
 #
 
@@ -194,13 +201,3 @@ ggsave("Baynes Sound 20mbss Temp.pdf",
        Baynes20_temp_plot,
        device = "pdf",
        path = here("figures"))
-
-
-
-
-geom_label_repel(data = subset(Baynes05, Temperature_C > 21.6),
-                 label = "Max Temp = 21.6ºC",
-                 nudge_x = -150, nudge_y = 1,
-                 label.r = 0.1,
-                 segmen
-                 size = 3) + 
