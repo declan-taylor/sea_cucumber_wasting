@@ -282,25 +282,35 @@ treatlabs = c("12?C", "17?C", "22?C")
 names(treatlabs)=c("Control", "Room", "Heat")
 
 # Total lesion count box plots
-ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
+All_lesions <- ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
   geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
   geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
   scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
   scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
   scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Maximum Lesions / Indiv.")+xlab("Treatment")+
+  ylab("Total Lesions / Indiv.")+xlab("Treatment")+
   theme_bw()+
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
 # Box plots but just for major lesions.
-ggplot(data=bodywall, aes(x=Treatment, y=major_lesions, fill=Treatment))+
+Major_lesions <- ggplot(data=bodywall, aes(x=Treatment, y=major_lesions, fill=Treatment))+
   geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
   geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
   scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
   scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
   scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Maximum Lesions / Indiv.")+xlab("Treatment")+
+  ylab("Major Lesions / Indiv.")+xlab("Treatment")+
   theme_bw()+
   theme(panel.grid=element_blank(), 
         legend.position="none")
+
+ggsave("Lesions_all_boxplot.pdf", 
+       All_lesions,
+       device = "pdf",
+       path = here("figures"))
+
+ggsave("Lesions_major_boxplot.pdf", 
+       Major_lesions,
+       device = "pdf",
+       path = here("figures"))

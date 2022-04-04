@@ -201,3 +201,7 @@ ggsave("Baynes Sound 20mbss Temp.pdf",
        Baynes20_temp_plot,
        device = "pdf",
        path = here("figures"))
+ggsave("Baynes_temp_plot.pdf",
+       Baynes_temp_plot,
+       device = "pdf",
+       path = here("figures"))

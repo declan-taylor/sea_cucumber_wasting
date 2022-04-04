@@ -159,8 +159,17 @@ t_n_2021 <- read_csv("2010_2020_SST_data.csv")
 
 # Graph
 ggplot(t_n_fin, aes(x = day_of_year, y = mean_temp)) + 
+  geom_line(data = t_n_fin, aes(x = day_of_year, y = mean_temp, colour = mean_temp), method = loess) +
+  scale_color_gradient2(low = "dodgerblue1",
+                        mid = "lightyellow2",
+                        high = "orangered1",
+                        midpoint = 12) +
+  geom_pointrange(aes(ymin = mean_temp - sd, ymax = mean_temp + sd), color = 'slateblue')
+  
+  
+  
   geom_point(colour = 'salmon2') +
-  #geom_pointrange(aes(ymin = mean_temp - sd, ymax = mean_temp + sd), color = 'slateblue') +
+  geom_pointrange(aes(ymin = mean_temp - sd, ymax = mean_temp + sd), color = 'slateblue') +
   geom_line(data = t_n_fin, colour = 'slateblue') +
   geom_point(data = t_2021, colour = 'salmon4') +
   geom_line(data = t_2021, colour = 'salmon2') +
