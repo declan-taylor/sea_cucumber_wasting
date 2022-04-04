@@ -4,7 +4,7 @@ library(grid)
 library(tidyverse)
 
 # Importing data and formatting the date/time information.
-DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
+DailyLog <- read_csv(here("data/DailyLog.csv"), col_names = TRUE) %>%
   # Format `Date` column to POSIX standard
   mutate("Date" = dmy(Date)) %>%
   # Create column with date and time info
@@ -15,7 +15,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
   mutate(Sea_Table = as.factor(Sea_Table),
          Bucket_ID = as.factor(Bucket_ID)) %>%
   # Renaming!
-  select(date = Date,
+  dplyr::select(date = Date,
          date_time = dateTime,
          sea_table = Sea_Table,
          table_position,
@@ -36,7 +36,7 @@ DailyLog <- read_csv("data/DailyLog.csv", col_names = TRUE) %>%
 # temperature data.
 tempRange <- DailyLog %>%
   filter(date == "2021-11-10" | date == "2021-11-11" | date == "2021-11-12") %>%
-  select(date, date_time, tableID, treatment, temp_C) %>%
+  dplyr::select(date, date_time, tableID, treatment, temp_C) %>%
   filter(treatment == "control")
 
 # Investigating the range and average temperatures of our 3 treatments.
@@ -53,7 +53,7 @@ tempStats <- DailyLog %>%
   filter(date == "2021-11-10" | date == "2021-11-11" | date == "2021-11-12") %>%
   #group_by(treatment) %>%
   #mutate(mean_temp = mean(temp_C)) %>%
-  select(date,
+  dplyr::select(date,
          bucketID,
          treatment,
          temp_C)
@@ -72,13 +72,13 @@ death_time <- DailyLog %>%
   filter(FALSE == is.na(alive) | FALSE == is.na(death_time)) %>%
   # Use POSIXct standard for death_time
   mutate(death_time = ymd_hms(paste(date, death_time))) %>%
-  select(death_time, bucketID, temp_C) %>%
+  dplyr::select(death_time, bucketID, temp_C) %>%
   mutate(placehold = 1)
 
 # Generating a dataframe for the temperature data over time so that we can
 # create a plot.
 Temp_Time <- DailyLog %>%
-  select(date_time, date, sea_table, table_position, bucketID, tableID, temp_C)
+  dplyr::select(date_time, date, sea_table, table_position, bucketID, tableID, temp_C)
 
 # Plot temperature over time, and plot the 5 death times with temp.
 TempPlot <- ggplot() +
