@@ -78,7 +78,7 @@ death_time <- DailyLog %>%
 # Generating a dataframe for the temperature data over time so that we can
 # create a plot.
 Temp_Time <- DailyLog %>%
-  dplyr::select(date_time, date, sea_table, table_position, bucketID, tableID, temp_C)
+  dplyr::select(date_time, date, sea_table, table_position, bucketID, tableID, temp_C, treatment)
 
 # Plot temperature over time, and plot the 5 death times with temp.
 TempPlot <- ggplot() +
@@ -126,3 +126,42 @@ ggsave("temp_plot.png",
        TempPlot,
        device = "png",
        path = here("figures"))
+
+
+#------------------------------------------------------------------------------
+# As per Dan's suggestion, I am going to make an average line for each 
+# treatment with a ribbon indicating variation around that average. Ideally
+# this can get plotted with the Baynes sound data.
+
+factored_temp <- Temp_Time %>%
+  group_by(date_time, treatment) %>%
+  summarise(average = mean(temp_C),
+            min = min(temp_C),
+            max = max(temp_C)) %>%
+  drop_na()
+
+ggplot() +
+  geom_ribbon(data = factored_temp,
+              aes(x = date_time,
+                  ymin = min,
+                  ymax = max,
+                  fill = treatment)) +
+  geom_line(data = factored_temp,
+            aes(x = date_time,
+                y = average, 
+                fill = treatment),
+                colour = "black") +
+  scale_x_datetime(date_breaks = "1 day",
+                   date_labels = "%b %d") +
+  labs(x = "Date",
+       y = "Temperature (ºC)",
+       colour = "Treatment") +
+  scale_colour_manual(values = c("#0000CC", "#660066", "#CC0000")) +
+  guides(colour = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(breaks = c(12, 14, 16, 18, 20, 22, 24))+
+  theme_classic()
+
+
+
+
+
