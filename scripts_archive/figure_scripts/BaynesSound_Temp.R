@@ -163,7 +163,7 @@ Baynes_temp_plot <- ggplot(data = NULL,
   scale_color_gradient2(low = "dodgerblue1",
                         mid = "lightyellow2",
                         high = "orangered1",
-                        midpoint = 12) +
+                        midpoint = 13) +
     geom_line(data = Baynes05, 
               aes(x = Date, y = Roll_Temp),
               col = "black", alpha = 0.8,
@@ -185,6 +185,7 @@ Baynes_temp_plot <- ggplot(data = NULL,
   labs(x = "Year",
        y = "Temperature (°C)",
        color = "Temperature (°C)") +
+  ylim(5,24) +
   theme_classic() +
   theme(legend.position = "none")
 
