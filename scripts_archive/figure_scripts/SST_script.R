@@ -158,21 +158,28 @@ t_2021 <- read_csv("2021_SST_data.csv")
 t_n_2021 <- read_csv("2010_2020_SST_data.csv")
 
 # Graph
-ggplot(t_n_fin, aes(x = day_of_year, y = mean_temp)) + 
-  geom_line(data = t_n_fin, aes(x = day_of_year, y = mean_temp, colour = mean_temp), method = loess) +
-  scale_color_gradient2(low = "dodgerblue1",
-                        mid = "lightyellow2",
-                        high = "orangered1",
-                        midpoint = 12) +
-  geom_pointrange(aes(ymin = mean_temp - sd, ymax = mean_temp + sd), color = 'slateblue')
-  
-  
-  
-  geom_point(colour = 'salmon2') +
-  geom_pointrange(aes(ymin = mean_temp - sd, ymax = mean_temp + sd), color = 'slateblue') +
-  geom_line(data = t_n_fin, colour = 'slateblue') +
-  geom_point(data = t_2021, colour = 'salmon4') +
-  geom_line(data = t_2021, colour = 'salmon2') +
-  ggtitle('2021 average SST time series compared to 2010-2020 composite') +
-  xlab('Day of year') +
-  ylab('Average temperature - degrees Celsius')
+ggplot() +
+  geom_ribbon(data = t_n_fin,
+              aes(x = day_of_year,
+                  ymin = mean_temp - sd,
+                  ymax = mean_temp + sd),
+              fill = "grey70") +
+  geom_line(data = t_n_fin,
+            aes(x = day_of_year,
+                y = mean_temp),
+            colour = "black") +
+  geom_line(data = t_2021,
+            aes(x = day_of_year,
+                y = mean_temp,
+                colour = mean_temp),
+            size = 1.3) +
+  scale_colour_gradient2(low = "dodgerblue1",
+                       mid = "lightyellow2",
+                       high = "orangered1",
+                       midpoint = 12) +
+  labs(x = "Day of year",
+       y = "Average Temperature (ºC)") +
+  ylim(5,24) +
+  theme_classic() +
+  theme(legend.position = "none")
+
