@@ -4,7 +4,7 @@ library(Hmisc)
 library(ordinal)
 library(gamlss)
 
-lesion = read_csv("data/BehaviourData_Final.csv") %>%
+lesion = read_csv(here("data/BehaviourData_Final.csv")) %>%
   mutate(
     Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
     Bucket_ID = as.factor(Bucket_ID),
@@ -24,7 +24,7 @@ lesion_max = lesion %>%
   dplyr::select(-"Number_lesions")
 
 # reading in weight data
-size = read_csv("data/SizeData.csv") %>%
+size = read_csv(here("data/SizeData.csv")) %>%
   mutate(
     Bucket_ID = as.factor(Bucket_ID),
     Cuke_ID=as.factor(Cuke_ID),
@@ -53,7 +53,7 @@ create_individualData <- function(datafile){
     # remove the first 34 lines of data frame (pre-experiment data).
     tail(-34) %>%
     # Select and rename variables
-    select(date = Date,
+    dplyr::select(date = Date,
            date_time = dateTime,
            sea_table = Sea_Table,
            table_position,
@@ -84,32 +84,32 @@ create_individualData <- function(datafile){
     filter(FALSE == is.na(alive) | FALSE == is.na(death_time)) %>%
     # Use POSIXct standard for death_time
     mutate(death_time = ymd_hms(paste(date, death_time))) %>%
-    select(death_time, combinedID)
+    dplyr::select(death_time, combinedID)
   
   evisceration <- SelectedData %>%
     filter(FALSE == is.na(evisceration)) %>%
     # sub text entries like "yes" for `1`.
     mutate(evisceration = gsub("[A-z]{3}", 1, evisceration))%>%
-    select(combinedID, evisceration) %>%
+    dplyr::select(combinedID, evisceration) %>%
     distinct(combinedID, .keep_all = TRUE)
   
   resp_evisc <- SelectedData %>%
     filter(FALSE == is.na(resp_evisc)) %>%
     mutate(resp_evisc = gsub("[A-z]{3}", 1, resp_evisc))%>%
-    select(combinedID, resp_evisc) %>%
+    dplyr::select(combinedID, resp_evisc) %>%
     distinct(combinedID, .keep_all = TRUE)
   
   poop <- SelectedData %>%
     filter(FALSE == is.na(poop)) %>%
     mutate(poop = gsub("[A-z]{3}", 1, poop)) %>%
-    select(combinedID, poop) %>%
+    dplyr::select(combinedID, poop) %>%
     distinct(combinedID, .keep_all = TRUE)
   
   spawn <- SelectedData %>%
     # text entries may be "yes" or "eggs".
     mutate(spawn = gsub("[A-z]{3,4}", 1, spawn, ignore.case = TRUE)) %>%
     filter(FALSE == is.na(spawn)) %>%
-    select(combinedID, spawn) %>%
+    dplyr::select(combinedID, spawn) %>%
     distinct(combinedID, .keep_all = TRUE)
   
   # List the variables for which dataframes were created.
@@ -118,7 +118,7 @@ create_individualData <- function(datafile){
   # Generate a 1-column data frame which is a list of all the combinedID values
   # (i.e. all the unique bins in our experiment).
   IndividualData <- SelectedData %>%
-    select(date_time,
+    dplyr::select(date_time,
            tableID,
            bucketID,
            cukeID,
@@ -171,7 +171,7 @@ add_stressData <- function(datafile){
     mutate("Date" = dmy(Date)) %>%
     mutate("dateTime" = paste(Date, Time, sep = "_")) %>%
     mutate(dateTime = ymd_hms(dateTime)) %>%
-    select(date = Date,
+    dplyr::select(date = Date,
            time = Time,
            date_time = dateTime,
            sea_table = Sea_Table,
@@ -197,7 +197,7 @@ add_stressData <- function(datafile){
            squeeze = as.factor(squeeze)) %>%
     # Columns to be added to IndividualData, with droop and squeeze indicated
     # as initial data.
-    select(combinedID,
+    dplyr::select(combinedID,
            in_activity = activity,
            in_droop = droop,
            in_squeeze = squeeze)
@@ -212,7 +212,7 @@ add_weightData <- function(datafile){
     # Create an average weight from the two weight measurements taken at the 
     # start of teh experiment.
     mutate(weight_g = (Weight_g + Weight_2)/2) %>%
-    select(weight_g, combinedID)
+    dplyr::select(weight_g, combinedID)
   
   # Join the weight data to the full dataframe.
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
@@ -230,7 +230,7 @@ add_weightData("SizeData.csv")
 
 individual_pooping = IndividualData %>%
   mutate(Unique_ID = paste(bucketID, cukeID, sep="_"))%>%
-  select(c("Unique_ID", "poop", "evisceration"))
+  dplyr::select(c("Unique_ID", "poop", "evisceration"))
 
 
 lesion_max = merge(lesion_max, individual_pooping, by=c("Unique_ID"))
@@ -244,6 +244,22 @@ lesions_prop = lesion_max %>%
   group_by(Treatment) %>%
   count(lesion_presence)
 
+# create a data frame with counts for body wall (what we've elsewhere called 
+# 'major') lesions.
+bodywall = read_csv(here("data/BehaviourData_Final.csv")) %>%
+  mutate(
+    Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
+    Bucket_ID = as.factor(Bucket_ID),
+    Cuke_ID=as.factor(Cuke_ID),
+    Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
+    Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
+    Date = as.Date(Date, format="%d-%m-%Y")) %>%
+  dplyr::select(c(Unique_ID, Bucket_ID, Table_ID, Date, Treatment, 'Bodywall lesions')) %>%
+  rename(major_lesions = 'Bodywall lesions') %>%
+  na.omit() %>%
+  group_by(Unique_ID) %>%
+  mutate(major_lesions = max(major_lesions)) %>%
+  distinct(Unique_ID, .keep_all=TRUE)
 
 # finding the distribution that best fits our response variable (max_lesions)
 gamlss::fitDist(max_lesions, data=lesion_max, type="counts", try.gamlss=TRUE)
@@ -265,32 +281,36 @@ str(lesion_max)
 treatlabs = c("12?C", "17?C", "22?C")
 names(treatlabs)=c("Control", "Room", "Heat")
 
-
-
-ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
+# Total lesion count box plots
+All_lesions <- ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
   geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
   geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
   scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
   scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
   scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Maximum Lesions / Indiv.")+xlab("Treatment")+
+  ylab("Total Lesions / Indiv.")+xlab("Treatment")+
   theme_bw()+
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
+# Box plots but just for major lesions.
+Major_lesions <- ggplot(data=bodywall, aes(x=Treatment, y=major_lesions, fill=Treatment))+
+  geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
+  geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
+  scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
+  scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
+  scale_fill_manual(values=c("Gold", "Orange","Red"))+
+  ylab("Major Lesions / Indiv.")+xlab("Treatment")+
+  theme_bw()+
+  theme(panel.grid=element_blank(), 
+        legend.position="none")
 
+ggsave("Lesions_all_boxplot.pdf", 
+       All_lesions,
+       device = "pdf",
+       path = here("figures"))
 
-
-bodywall = read_csv("data/BehaviourData_Final.csv") %>%
-  mutate(
-    Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
-    Bucket_ID = as.factor(Bucket_ID),
-    Cuke_ID=as.factor(Cuke_ID),
-    Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
-    Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
-    Date = as.Date(Date, format="%d-%m-%Y")) %>%
-  dplyr:: select(c(Unique_ID, Bucket_ID, Table_ID, Date, Treatment, 'Bodywall lesion')) %>%
-  na.omit()
-
-
-
+ggsave("Lesions_major_boxplot.pdf", 
+       Major_lesions,
+       device = "pdf",
+       path = here("figures"))
