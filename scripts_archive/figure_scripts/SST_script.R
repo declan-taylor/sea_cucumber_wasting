@@ -153,33 +153,42 @@ library(tidyverse)
 theme_set(theme_classic()) # set ggplot theme
 
 # Load data
-t_n_fin <- read_csv("2010_2020_SST_avg_data.csv")
-t_2021 <- read_csv("2021_SST_data.csv")
-t_n_2021 <- read_csv("2010_2020_SST_data.csv")
+t_n_fin <- read_csv(here("data/Em_SSTdata/2010_2020_SST_avg_data.csv"))
+t_2021 <- read_csv(here("data/Em_SSTdata/2021_SST_data.csv"))
+t_n_2021 <- read_csv(here("data/Em_SSTdata/2010_2020_SST_data.csv"))
+
+# Add date column to the t_n_2021 data frame
+t_n_fin <- t_n_fin %>%
+  mutate(date = as.Date(day_of_year, origin = "2020-12-31"))
 
 # Graph
 ggplot() +
   geom_ribbon(data = t_n_fin,
-              aes(x = day_of_year,
+              aes(x = date,
                   ymin = mean_temp - sd,
                   ymax = mean_temp + sd),
               fill = "grey70") +
   geom_line(data = t_n_fin,
-            aes(x = day_of_year,
+            aes(x = date,
                 y = mean_temp),
             colour = "black") +
+  geom_ribbon(data = t_2021,
+              aes(x = date,
+                  ymin = mean_temp - temp_sd,
+                  ymax = mean_temp + temp_sd),
+              fill = "black",
+              alpha = 0.5) +
   geom_line(data = t_2021,
-            aes(x = day_of_year,
+            aes(x = date,
                 y = mean_temp,
                 colour = mean_temp),
-            size = 1.3) +
+            size = 1.7) +
   scale_colour_gradient2(low = "dodgerblue1",
                        mid = "lightyellow2",
                        high = "orangered1",
                        midpoint = 12) +
-  labs(x = "Day of year",
+  labs(x = "Date",
        y = "Average Temperature (ºC)") +
   ylim(5,24) +
   theme_classic() +
   theme(legend.position = "none")
-
