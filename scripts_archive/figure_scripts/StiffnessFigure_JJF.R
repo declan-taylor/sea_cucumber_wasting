@@ -5,7 +5,8 @@ library(tidyverse)
 library(Hmisc)
 library(ordinal)
 
-stiff = read_csv("data/BehaviourData.csv") %>%
+# load the stiffness data, rename and format columns
+stiff <- read_csv(here("data/BehaviourData.csv")) %>%
   mutate(Droop_score = as.factor(Droop_score),
          Squeeze_score = as.factor(Squeeze_score), 
          Date = as.Date(Date, format="%d/%m/%Y"),
@@ -18,29 +19,41 @@ stiff = read_csv("data/BehaviourData.csv") %>%
 
   str(stiff)
   
-#### PLOTTING DROOP DATA ########
-droop_plot = 
-  ggplot(data =stiff, aes(x=as.factor(Date), fill=Droop_score))+
-  geom_bar(alpha=0.8, color="black", size=0.5) +
+#### PLOTTING DROOP DATA
+stiffness_plot <-
+  ggplot(data =stiff, 
+         aes(x=as.factor(Date), 
+             fill=Droop_score))+
+  geom_bar(alpha=0.8, 
+           color="black", 
+           size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
-                     labels=c("Nov09", "Nov10", "Nov11", "Nov12", "Nov13","Nov14", "Nov15"))+
-    xlab("Day")+
+                   labels=c("Nov09", "Nov10", "Nov11", "Nov12", "Nov13","Nov14", "Nov15")) +
+  xlab("Day") +
   #scale_x_date(date_labels = "%b%d", date_breaks="1 day")+
-  geom_vline(xintercept=1.5, linetype=2)+
-  geom_vline(xintercept=4.5, linetype=2)+
-  scale_y_continuous(expand=c(0,0))+
+  geom_vline(xintercept=1.5, 
+             linetype=2) +
+  geom_vline(xintercept=4.5, 
+             linetype=2) +
+  scale_y_continuous(expand=c(0,0)) +
   ylab("# Sea Cucumbers")+
-  scale_fill_brewer(name="Droop Score",labels=c("0 - Full Droop","1 - Partial Droop","2 - No Droop"), 
-                    palette="OrRd", direction=1)+
+  scale_fill_brewer(name="Droop Score",
+                    labels=c("0 - Full Droop","1 - Partial Droop","2 - No Droop"), 
+                    palette="OrRd", 
+                    direction=1)+
   theme_bw()+
   theme(strip.text.y = element_text(size =12),
         panel.grid=element_blank())+
-  facet_grid(Treatment~.)
-droop_plot # show the plot!
+  facet_grid(Treatment ~ .)
 
-ggsave("figures/droop.jpg",plot=droop_plot, width=5, height=4)
+stiffness_plot # show the plot!
 
-##### PLOTTING SQUEEZE DATA ###### 
+ggsave("StiffnessPlot.pdf",
+       stiffness_plot, 
+       device = "pdf",
+       path = here("figures"))
+
+##### PLOTTING SQUEEZE DATA
 squeeze_plot = 
   ggplot(data =stiff, aes(x=as.factor(Date), fill=Squeeze_score))+
   geom_bar(alpha=0.8, color="black", size=0.5) +
@@ -64,7 +77,7 @@ ggsave("figures/squeeze.jpg",plot=squeeze_plot, width=5, height=4)
 
 
 
-#### PLOTTING CORRELATION BETWEEN SQUEEZE AND DROOP ####
+#### PLOTTING CORRELATION BETWEEN SQUEEZE AND DROOP
 squeeze_droop_cor = ggplot(data=stiff, aes(x=Squeeze_score, y=Droop_score, color=Treatment))+
   geom_jitter(width=0.2, height=0.2)+
   scale_color_manual(labels=c("Control (12?C)","Room (17?C)","Heat (22?C)"), values=c("Gold", "Orange","Red"))+
