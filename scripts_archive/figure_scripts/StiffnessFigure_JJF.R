@@ -5,7 +5,7 @@ library(tidyverse)
 library(Hmisc)
 library(ordinal)
 
-# load the stiffness data, rename and format columns
+# Load the stiffness data, rename and format columns
 stiff <- read_csv(here("data/BehaviourData.csv")) %>%
   mutate(Droop_score = as.factor(Droop_score),
          Squeeze_score = as.factor(Squeeze_score), 
@@ -15,10 +15,10 @@ stiff <- read_csv(here("data/BehaviourData.csv")) %>%
          Unique_ID = paste(Bucket_ID, Cuke_ID,  sep = '_'))%>%
   select(-c("Activity_Score", "Number_lesions","Bodywall_lesions")) %>%
   na.omit() %>%
-  # renaming the treatment factors
+  # Renaming the treatment factors
   mutate(Treatment = gsub("Room", "Summer", Treatment),
          Treatment = gsub("Heat", "Heat Wave", Treatment),
-         # reordering the treatments so they appear propperly in the grid
+         # Reordering the treatments so they appear propperly in the grid
          Treatment = fct_relevel(Treatment, 
                                  c("Heat Wave", "Summer", "Control")))
          
@@ -33,8 +33,8 @@ stiffness_plot <-
            color="black", 
            size=0.5) +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
-                   labels=c("Nov09", "Nov10", "Nov11", "Nov12", "Nov13","Nov14", "Nov15")) +
-  xlab("Day") +
+                   labels=c("1", "2", "3", "4", "5","6", "7")) +
+  xlab("Experiment Day") +
   #scale_x_date(date_labels = "%b%d", date_breaks="1 day")+
   geom_vline(xintercept=1.5, 
              linetype=2,
