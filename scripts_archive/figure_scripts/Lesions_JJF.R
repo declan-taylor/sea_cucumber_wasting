@@ -279,6 +279,8 @@ str(lesion_max)
 treatlabs = c("12ºC", "17ºC", "22ºC")
 names(treatlabs)=c("Control", "Room", "Heat")
 
+#------------------------------------------------------------------------------
+# FIGURES
 # Total lesion count box plots
 All_lesions <- ggplot(data = lesion_max, 
                       aes(x = Treatment, 
@@ -318,12 +320,12 @@ Major_lesions <- ggplot(data = major,
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
-ggsave("Lesions_all_boxplot.pdf", 
+ggsave("MinorLesions_boxplot.pdf", 
        All_lesions,
        device = "pdf",
        path = here("figures"))
 
-ggsave("Lesions_major_boxplot.pdf", 
+ggsave("MajorLeasions_boxplot.pdf", 
        Major_lesions,
        device = "pdf",
        path = here("figures"))
