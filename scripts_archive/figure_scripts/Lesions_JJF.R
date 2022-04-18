@@ -4,38 +4,36 @@ library(Hmisc)
 library(ordinal)
 library(gamlss)
 
-lesion = read_csv(here("data/BehaviourData_Final.csv")) %>%
+lesion <- read_csv(here("data/BehaviourData_Final.csv")) %>%
   mutate(
-    Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
     Bucket_ID = as.factor(Bucket_ID),
-    Cuke_ID=as.factor(Cuke_ID),
-    Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
-    Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
+    Cuke_ID = as.factor(Cuke_ID),
+    Unique_ID = paste(Bucket_ID, Cuke_ID,  
+                      sep = '_'), 
+    Table_ID = paste(Sea_Table, Table_Position, 
+                     sep='_'), 
     Date = as.Date(Date, format="%d-%m-%Y")) %>%
-  dplyr:: select(c(Unique_ID, Bucket_ID, Table_ID, Date, Treatment, Number_lesions)) %>%
+  dplyr::select(c(Unique_ID, Bucket_ID, Table_ID, Date, Treatment, Number_lesions)) %>%
   na.omit()
 
 
 # find max number of lesions per individual
-lesion_max = lesion %>%
+lesion_max <- lesion %>%
   group_by(Unique_ID) %>%
   mutate(max_lesions = max(Number_lesions)) %>%
-  distinct(Unique_ID, .keep_all=TRUE) %>%
+  distinct(Unique_ID, .keep_all = TRUE) %>%
   dplyr::select(-"Number_lesions")
 
 # reading in weight data
-size = read_csv(here("data/SizeData.csv")) %>%
+size <- read_csv(here("data/SizeData.csv")) %>%
   mutate(
     Bucket_ID = as.factor(Bucket_ID),
-    Cuke_ID=as.factor(Cuke_ID),
-    Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'),
+    Cuke_ID = as.factor(Cuke_ID),
+    Unique_ID = paste(Bucket_ID, Cuke_ID,  sep = '_'),
     mean_weight = (Weight_g+Weight_2)/2) %>%
   dplyr::select(c(Unique_ID, mean_weight))
 
-
-
-# using Declan's functions to combine individual data with lesion data 
-
+# Using Declan's functions from the `BinaryVariables.R` script to combine individual data with lesion data 
 # This function generates our **individual level data** with death_time, spawning, 
 # evisceration, and poop data. The function exists so the dataframe can be 
 # easily made in one click.
@@ -218,7 +216,6 @@ add_weightData <- function(datafile){
   IndividualData <<- full_join(IndividualData, WeightData, by = "combinedID")
 }
 
-
 # Run all 3 functions once, sequentially. Returned data frame should be 16 
 # variables across.
 create_individualData("DailyLog_final.csv")
@@ -227,32 +224,33 @@ add_weightData("SizeData.csv")
 
 
 # adding weight data to lesion data
-
-individual_pooping = IndividualData %>%
+individual_pooping <- IndividualData %>%
   mutate(Unique_ID = paste(bucketID, cukeID, sep="_"))%>%
   dplyr::select(c("Unique_ID", "poop", "evisceration"))
 
 
-lesion_max = merge(lesion_max, individual_pooping, by=c("Unique_ID"))
-lesion_max = merge(lesion_max, size, by=c("Unique_ID"))
+lesion_max <- merge(lesion_max, individual_pooping, by=c("Unique_ID"))
+lesion_max <- merge(lesion_max, size, by=c("Unique_ID"))
 
 
 # adding a column stating if a cucumber had lesions
-lesion_max$lesion_presence = ifelse(lesion_max$max_lesions==0, "N", "Y")
+lesion_max$lesion_presence <- ifelse(lesion_max$max_lesions==0, "N", "Y")
 
-lesions_prop = lesion_max %>%
+lesions_prop <- lesion_max %>%
   group_by(Treatment) %>%
   count(lesion_presence)
 
-# create a data frame with counts for body wall (what we've elsewhere called 
-# 'major') lesions.
-bodywall = read_csv(here("data/BehaviourData_Final.csv")) %>%
+# create a data frame with counts for major lesions.
+major <- read_csv(here("data/BehaviourData_Final.csv")) %>%
   mutate(
-    Treatment=fct_relevel(Treatment, c("Control","Room","Heat")),
+    Treatment = fct_relevel(Treatment, 
+                            c("Control","Room","Heat")),
     Bucket_ID = as.factor(Bucket_ID),
-    Cuke_ID=as.factor(Cuke_ID),
-    Unique_ID=paste(Bucket_ID, Cuke_ID,  sep = '_'), 
-    Table_ID = paste(Sea_Table, Table_Position, sep='_'), 
+    Cuke_ID = as.factor(Cuke_ID),
+    Unique_ID = paste(Bucket_ID, Cuke_ID, 
+                      sep = '_'), 
+    Table_ID = paste(Sea_Table, Table_Position, 
+                     sep='_'), 
     Date = as.Date(Date, format="%d-%m-%Y")) %>%
   dplyr::select(c(Unique_ID, Bucket_ID, Table_ID, Date, Treatment, 'Bodywall lesions')) %>%
   rename(major_lesions = 'Bodywall lesions') %>%
@@ -278,30 +276,45 @@ summary(step.lesions.backward)
 
 str(lesion_max)
 
-treatlabs = c("12?C", "17?C", "22?C")
+treatlabs = c("12ºC", "17ºC", "22ºC")
 names(treatlabs)=c("Control", "Room", "Heat")
 
 # Total lesion count box plots
-All_lesions <- ggplot(data=lesion_max, aes(x=Treatment, y=max_lesions, fill=Treatment))+
-  geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
-  geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
-  scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
-  scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
-  scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Total Lesions / Indiv.")+xlab("Treatment")+
-  theme_bw()+
+All_lesions <- ggplot(data = lesion_max, 
+                      aes(x = Treatment, 
+                          y = max_lesions, 
+                          fill = Treatment)) +
+  geom_boxplot(outlier.shape= NA, 
+               color="black", alpha=0.8) +
+  geom_point(alpha=0.5, position=position_dodge2(0.2), color = "black") +
+  scale_y_continuous(expand = c(0,0), 
+                     limits = c(-1,13.2))+
+  scale_x_discrete(labels = c("12ºC", "17ºC", "22ºC")) +
+  scale_fill_manual(values = c("Gold", "Orange","Red")) +
+  ylab("Total Lesions / Indiv.") +
+  xlab("Treatment") +
+  theme_bw() +
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
 # Box plots but just for major lesions.
-Major_lesions <- ggplot(data=bodywall, aes(x=Treatment, y=major_lesions, fill=Treatment))+
-  geom_boxplot(outlier.shape= NA, color="black", alpha=0.8)+
-  geom_point(alpha=0.5, position=position_dodge2(0.2), color="black")+
-  scale_y_continuous(expand=c(0,0), limits = c(-1,13.2))+
-  scale_x_discrete(labels=c("12?C", "17?C", "22?C"))+
-  scale_fill_manual(values=c("Gold", "Orange","Red"))+
-  ylab("Major Lesions / Indiv.")+xlab("Treatment")+
-  theme_bw()+
+Major_lesions <- ggplot(data = major, 
+                        aes(x = Treatment, 
+                            y = major_lesions, 
+                            fill = Treatment)) +
+  geom_boxplot(outlier.shape= NA, 
+               color="black", 
+               alpha=0.8) +
+  geom_point(alpha=0.5, 
+             position=position_dodge2(0.2), 
+             color="black") +
+  scale_y_continuous(expand=c(0,0), 
+                     limits = c(-1,13.2))+
+  scale_x_discrete(labels=c("12ºC", "17ºC", "22ºC")) +
+  scale_fill_manual(values=c("Gold", "Orange","Red")) +
+  ylab("Major Lesions / Indiv.") +
+  xlab("Treatment") +
+  theme_bw() +
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
