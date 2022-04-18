@@ -165,6 +165,9 @@ AverageTemps <- ggplot() +
             size = 1.5) +
   scale_x_datetime(date_breaks = "1 day",
                    date_labels = "%b %d") +
+  # Jon's code to fix x axis labels, I cannot figure it out just yet!
+  #scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
+  #                 labels=c("1", "2", "3", "4", "5","6", "7"))
   labs(x = "Date",
        y = "Temperature (ºC)",
        colour = "Treatment") +
