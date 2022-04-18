@@ -141,31 +141,47 @@ factored_temp <- Temp_Time %>%
   drop_na()
 
 AverageTemps <- ggplot() +
+  # Ribbon features of the width of temperature data
   geom_ribbon(data = factored_temp,
               aes(x = date_time,
                   ymin = min,
                   ymax = max,
                   fill = treatment)) +
+  scale_fill_manual(values = c("grey70", "grey70", "grey70")) +
+  # Small/individual lines representing each treatment.
+  geom_point(data = Temp_Time,
+            aes(x = date_time,
+                y = temp_C),
+                # Ignore warning about 'unknown aesthetic'... this code is 
+                # still important and functioning!
+            position = position_jitter(width = 0.55,
+                                       height = 0),
+            size = 0.4) +
   geom_line(data = factored_temp,
             aes(x = date_time,
                 y = average, 
                 fill = treatment),
-                colour = "black") +
+            colour = factored_temp$average,
+            size = 1.5) +
   scale_x_datetime(date_breaks = "1 day",
                    date_labels = "%b %d") +
   labs(x = "Date",
        y = "Temperature (ºC)",
        colour = "Treatment") +
-  scale_colour_manual(values = c("#0000CC", "#660066", "#CC0000")) +
-  #scale_fill_gradient2(low = "dodgerblue1",
-  #                      mid = "lightyellow2",
-  #                      high = "orangered1",
-  #                      midpoint = 12,
-  #                     guide = "colourbar",
-  #                     space = "Lab") +
-  theme_classic()
+  scale_color_gradient2(low = "dodgerblue1",
+                        mid = "lightyellow2",
+                        high = "orangered1",
+                        midpoint = 13) +
+  theme_classic() +
+  theme(legend.position = "none")
 
 AverageTemps
+
+ggsave("ExperimentTemps.pdf",
+       AverageTemps,
+       width = 6, height = 8,
+       device = "pdf",
+       path = here("figures"))
 
 # I'm also going to create a figure which is a subsetted version of the above,
 # which just includes the range of the temperature within each treatment, and
@@ -181,7 +197,6 @@ average_temp <- factored_temp_3day %>%
   summarise(average = mean(temp_C),
             min = min(temp_C),
             max = max(temp_C))
-  
 
 AverageTemps_3day <- 
   ggplot(data = factored_temp_3day,
@@ -218,7 +233,7 @@ AverageTemps_3day <-
 
 AverageTemps_3day
 
-ggsave("AverageTemps_3day.pdf",
+ggsave("StackedTemperature.pdf",
        AverageTemps_3day,
        device = "pdf",
        path = here("figures"))
