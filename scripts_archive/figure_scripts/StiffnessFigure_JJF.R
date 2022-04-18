@@ -10,15 +10,18 @@ stiff <- read_csv(here("data/BehaviourData.csv")) %>%
   mutate(Droop_score = as.factor(Droop_score),
          Squeeze_score = as.factor(Squeeze_score), 
          Date = as.Date(Date, format="%d/%m/%Y"),
-         Treatment = fct_relevel(Treatment, c("Control","Room","Heat")),
          Bucket_ID = as.factor(Bucket_ID),
          Cuke_ID = as.factor(Cuke_ID),
          Unique_ID = paste(Bucket_ID, Cuke_ID,  sep = '_'))%>%
   select(-c("Activity_Score", "Number_lesions","Bodywall_lesions")) %>%
   na.omit() %>%
   # renaming the treatment factors
-  mutate(Treatment = )
-
+  mutate(Treatment = gsub("Room", "Summer", Treatment),
+         Treatment = gsub("Heat", "Heat Wave", Treatment),
+         # reordering the treatments so they appear propperly in the grid
+         Treatment = fct_relevel(Treatment, 
+                                 c("Heat Wave", "Summer", "Control")))
+         
   str(stiff)
   
 #### PLOTTING DROOP DATA
@@ -34,13 +37,15 @@ stiffness_plot <-
   xlab("Day") +
   #scale_x_date(date_labels = "%b%d", date_breaks="1 day")+
   geom_vline(xintercept=1.5, 
-             linetype=2) +
+             linetype=2,
+             size = 1) +
   geom_vline(xintercept=4.5, 
-             linetype=2) +
+             linetype=2, 
+             size = 1) +
   scale_y_continuous(expand=c(0,0)) +
-  ylab("# Sea Cucumbers")+
+  ylab("Number of Sea Cucumbers")+
   scale_fill_brewer(name="Droop Score",
-                    labels=c("0 - Full Droop","1 - Partial Droop","2 - No Droop"), 
+                    labels=c("0 - Full Droop", "1 - Partial Droop", "2 - No Droop"), 
                     palette="OrRd", 
                     direction=1)+
   theme_bw()+
