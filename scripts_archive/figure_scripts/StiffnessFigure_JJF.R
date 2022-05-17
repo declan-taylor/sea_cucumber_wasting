@@ -16,11 +16,11 @@ stiff <- read_csv(here("data/BehaviourData.csv")) %>%
   select(-c("Activity_Score", "Number_lesions","Bodywall_lesions")) %>%
   na.omit() %>%
   # Renaming the treatment factors
-  mutate(Treatment = gsub("Room", "Summer", Treatment),
+  mutate(Treatment = gsub("Room", "Warm", Treatment),
          Treatment = gsub("Heat", "Heat Wave", Treatment),
          # Reordering the treatments so they appear propperly in the grid
          Treatment = fct_relevel(Treatment, 
-                                 c("Heat Wave", "Summer", "Control")))
+                                 c("Heat Wave", "Warm", "Control")))
          
   str(stiff)
   
