@@ -49,11 +49,13 @@ stiffness_plot <-
              linetype=2, 
              size = 1) +
   scale_y_continuous(expand=c(0,0)) +
-  ylab("Number of Sea Cucumbers")+
-  scale_fill_brewer(name="Droop Score",
+  ylab("Number of Sea Cucumbers") +
+  scale_fill_manual(name="Droop Score",
                     labels=c("Mortality", "0 - Full Droop", "1 - Partial Droop", "2 - No Droop"), 
-                    palette="OrRd", 
-                    direction=1) +
+                    values = c(mortality = "#A7A8AA",
+                               "0" = "#FBEDD6",
+                               "1" = "#F6CBA3",
+                               "2" = "#DA7765")) +
   theme_bw() +
   theme(strip.text.y = element_text(size =12),
         panel.grid=element_blank()) +
