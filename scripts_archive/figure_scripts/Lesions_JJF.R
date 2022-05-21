@@ -288,7 +288,7 @@ minor_lesions <- ggplot(data = lesion_max,
   geom_point(alpha=0.5, position=position_dodge2(0.2), color = "black") +
   scale_y_continuous(expand = c(0,0), 
                      limits = c(-1,13.2))+
-  scale_x_discrete(labels = c("Control", "Summer", "Heat Wave")) +
+  scale_x_discrete(labels = c("Control", "Warm", "Heat Wave")) +
   scale_fill_manual(values = c("Gold", "Orange","Red")) +
   ylab("Total Lesions / Indiv.") +
   xlab("Treatment") +
@@ -309,7 +309,7 @@ major_lesions <- ggplot(data = major,
              color="black") +
   scale_y_continuous(expand=c(0,0), 
                      limits = c(-1,13.2))+
-  scale_x_discrete(labels = c("Control", "Summer", "Heat Wave")) +
+  scale_x_discrete(labels = c("Control", "Warm", "Heat Wave")) +
   scale_fill_manual(values = c("Gold", "Orange","Red")) +
   ylab("Major Lesions / Indiv.") +
   xlab("Treatment") +
@@ -324,7 +324,7 @@ ggsave("MinorLesions_boxplot.pdf",
        path = here("figures"))
 
 ggsave("MajorLesions_boxplot.pdf", 
-       Major_lesions,
+       major_lesions,
        height = 4, width = 10,
        device = "pdf",
        path = here("figures"))

@@ -7,20 +7,26 @@ library(ordinal)
 
 # Load the stiffness data, rename and format columns
 stiff <- read_csv(here("data/BehaviourData.csv")) %>%
-  mutate(Droop_score = as.factor(Droop_score),
-         Squeeze_score = as.factor(Squeeze_score), 
-         Date = as.Date(Date, format="%d/%m/%Y"),
+  mutate(Date = as.Date(Date, format="%d/%m/%Y"),
          Bucket_ID = as.factor(Bucket_ID),
          Cuke_ID = as.factor(Cuke_ID),
          Unique_ID = paste(Bucket_ID, Cuke_ID,  sep = '_'))%>%
   select(-c("Activity_Score", "Number_lesions","Bodywall_lesions")) %>%
-  na.omit() %>%
+  mutate(Droop_score = replace_na(stiff$Droop_score, "mortality"),
+         Squeeze_score = replace_na(stiff$Squeeze_score, "mortality")) %>%
+  mutate(Droop_score = as.factor(Droop_score),
+         Squeeze_score = as.factor(Squeeze_score)) %>%
   # Renaming the treatment factors
-  mutate(Treatment = gsub("Room", "Summer", Treatment),
+  mutate(Treatment = gsub("Room", "Warm", Treatment),
          Treatment = gsub("Heat", "Heat Wave", Treatment),
-         # Reordering the treatments so they appear propperly in the grid
+         # Reordering the treatments so they appear properly in the grid
          Treatment = fct_relevel(Treatment, 
-                                 c("Heat Wave", "Summer", "Control")))
+                                 c("Heat Wave", "Warm", "Control")),
+         # Reordering the factors in mortality stands out
+         Droop_score = fct_relevel(Droop_score,
+                                   c("mortality", 0, 1, 2)),
+         Squeeze_score = fct_relevel(Squeeze_score,
+                                   c("mortality", 0, 1, 2)))
          
   str(stiff)
   
@@ -43,14 +49,16 @@ stiffness_plot <-
              linetype=2, 
              size = 1) +
   scale_y_continuous(expand=c(0,0)) +
-  ylab("Number of Sea Cucumbers")+
-  scale_fill_brewer(name="Droop Score",
-                    labels=c("0 - Full Droop", "1 - Partial Droop", "2 - No Droop"), 
-                    palette="OrRd", 
-                    direction=1)+
-  theme_bw()+
+  ylab("Number of Sea Cucumbers") +
+  scale_fill_manual(name="Droop Score",
+                    labels=c("Mortality", "0 - Full Droop", "1 - Partial Droop", "2 - No Droop"), 
+                    values = c(mortality = "#A7A8AA",
+                               "0" = "#FBEDD6",
+                               "1" = "#F6CBA3",
+                               "2" = "#DA7765")) +
+  theme_bw() +
   theme(strip.text.y = element_text(size =12),
-        panel.grid=element_blank())+
+        panel.grid=element_blank()) +
   facet_grid(Treatment ~ .)
 
 stiffness_plot # show the plot!

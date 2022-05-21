@@ -10,6 +10,7 @@ library(raster)
 library(tidyverse)
 library(lubridate)
 library(ncdf4)
+library(here)
 
 #set theme
 theme_set(theme_classic())
@@ -161,53 +162,52 @@ t_n_2021 <- read_csv(here("data/Em_SSTdata/2010_2020_SST_data.csv"))
 t_n_fin <- t_n_fin %>%
   mutate(date = as.Date(day_of_year, origin = "2020-12-31"))
 
-# Horizontal labelling bars use mapping contained in the following dataframe,
-# which has dates carreid over from t_n_fin
-t_n_fin <- t_n_fin %>%
-  mutate(line1 = 12.4,
-         line2 = 16.6,
-         line3 = 21.7)
-# remove some of the hline values so that the horizontal lines do not cross the
-# width of the graph.
-t_n_fin$line1[1:15] <- NA
-t_n_fin$line2[1:31] <- NA
-t_n_fin$line3[1:26] <- NA
-
 # Graph
 Baynes_SST <- ggplot() +
+  # Shaded ribbron to represent standard deviation around the black 2010-2020 
+  # Composite temperature line.
   geom_ribbon(data = t_n_fin,
               aes(x = date,
                   ymin = mean_temp - sd,
                   ymax = mean_temp + sd),
               fill = "grey70") +
+  # Black 2010-2020 composite temperature line
   geom_line(data = t_n_fin,
             aes(x = date,
                 y = mean_temp),
             colour = "black") +
-  geom_ribbon(data = t_2021,
-              aes(x = date,
-                  ymin = mean_temp - temp_sd,
-                  ymax = mean_temp + temp_sd),
-              fill = "black",
-              alpha = 0.5) +
-  geom_line(data = t_n_fin,
-            aes(x = date, y = line1,
-                colour = line1),
-            size = 1) +
-  geom_line(data = t_n_fin,
-            aes(x = date, y = line2,
-                colour = line2),
-            size = 1) +
-  geom_line(data = t_n_fin,
-            aes(x = date, y = line3,
-                colour = line3),
-            size = 1) +
+  # Standard deviation of 2021 SST data: opted not to include in plot.
+  ##geom_ribbon(data = t_2021,
+  ##            aes(x = date,
+  ##                ymin = mean_temp - temp_sd,
+  ##                ymax = mean_temp + temp_sd),
+  ##            fill = "black",
+  ##            alpha = 0.5) +
+  # Horizontal lines indicating the 12, 17, and 22C treatments. Hexcode colours
+  # pulled from the scaled colour gradient via adobe illustrator.
+  geom_segment(data = t_2021,
+               aes(x = as.Date("2021-04-22"), y = 12.4,
+                   xend = as.Date("2021-12-18"), yend = 12.4),
+               colour = "#F0EAD0",
+               size = 0.8) +
+  geom_segment(data = t_2021,
+               aes(x = as.Date("2021-06-14"), y = 16.6,
+                   xend = as.Date("2021-12-18"), yend = 16.6),
+               colour = "#F8D1B8",
+               size = 0.8) +
+  geom_segment(data = t_2021,
+               aes(x = as.Date("2021-08-05"), y = 21.7,
+                   xend = as.Date("2021-12-18"), yend = 21.7),
+               colour = "#EC5E33",
+               size = 0.8) +
+  # the colourful line with the 2021 SST data
   geom_line(data = t_2021,
             aes(x = date,
                 y = mean_temp,
                 colour = mean_temp),
             linejoin = "bevel",
             size = 1.7) +
+  # creating the colour on the 2021 line
   scale_colour_gradient2(low = "dodgerblue1",
                        mid = "lightyellow2",
                        high = "orangered1",
