@@ -324,7 +324,7 @@ ggsave("MinorLesions_boxplot.pdf",
        path = here("figures"))
 
 ggsave("MajorLesions_boxplot.pdf", 
-       Major_lesions,
+       major_lesions,
        height = 4, width = 10,
        device = "pdf",
        path = here("figures"))
