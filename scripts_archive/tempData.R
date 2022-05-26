@@ -122,6 +122,8 @@ TempPlot <- ggplot() +
   scale_y_continuous(breaks = c(12, 14, 16, 18, 20, 22, 24))+
   theme_classic()
 
+TempPlot
+
 ggsave("temp_plot.png", 
        TempPlot,
        device = "png",
@@ -146,35 +148,31 @@ AverageTemps <- ggplot() +
               aes(x = date_time,
                   ymin = min,
                   ymax = max,
-                  fill = treatment)) +
-  scale_fill_manual(values = c("grey70", "grey70", "grey70")) +
+                  fill = treatment),
+              alpha = 0.7) +
+  scale_fill_manual(values = c("#D0D5DD", "#E7B46C", "#D2615D")) +
   # Small/individual lines representing each treatment.
   geom_point(data = Temp_Time,
             aes(x = date_time,
-                y = temp_C),
+                y = temp_C,
+                colour = treatment),
                 # Ignore warning about 'unknown aesthetic'... this code is 
                 # still important and functioning!
             position = position_jitter(width = 0.55,
-                                       height = 0),
+                                       height = 0.55),
             size = 0.4) +
   geom_line(data = factored_temp,
             aes(x = date_time,
                 y = average, 
                 fill = treatment),
-            colour = factored_temp$average,
-            size = 1.5) +
+            colour = "black",
+            size = 0.8, alpha = 0.8) +
+  scale_colour_manual(values = c("#D0D5DD", "#E7B46C", "#D2615D")) +
   scale_x_datetime(date_breaks = "1 day",
-                   date_labels = "%b %d") +
-  # Jon's code to fix x axis labels, I cannot figure it out just yet!
-  #scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
-  #                 labels=c("1", "2", "3", "4", "5","6", "7"))
+                   date_labels = c("1", "2", "3", "4", "5", "6", "7")) +
   labs(x = "Date",
        y = "Temperature (ºC)",
        colour = "Treatment") +
-  scale_color_gradient2(low = "dodgerblue1",
-                        mid = "lightyellow2",
-                        high = "orangered1",
-                        midpoint = 13) +
   theme_classic() +
   theme(legend.position = "none")
 
@@ -186,6 +184,7 @@ ggsave("ExperimentTemps.pdf",
        device = "pdf",
        path = here("figures"))
 
+#------------------------------------------------------------------------------
 # I'm also going to create a figure which is a subsetted version of the above,
 # which just includes the range of the temperature within each treatment, and
 # stacks these as bars to indicate the frequency of each temperature in each
