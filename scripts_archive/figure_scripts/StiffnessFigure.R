@@ -1,7 +1,6 @@
-# making a figure to show changes in cucumber stiffness over time
-
 library(here)
 library(tidyverse)
+library(ggpattern)
 library(Hmisc)
 library(ordinal)
 
@@ -32,36 +31,39 @@ stiff <- read_csv(here("data/BehaviourData.csv")) %>%
   
 #### PLOTTING DROOP DATA
 stiffness_plot <-
-  ggplot(data =stiff, 
-         aes(x=as.factor(Date), 
-             fill=Droop_score))+
-  geom_bar(alpha=0.8, 
-           color="black", 
-           size=0.5) +
+  ggplot(data = stiff, 
+         aes(x = as.factor(Date))) +
+  geom_bar_pattern(aes(fill = Droop_score,
+                       pattern = Droop_score),
+                   alpha = 0.8, 
+                   color = "black",
+                   size = 0.5) +
+  scale_pattern_manual(values = c('stripe', 'none', 'none', 'none'),
+                       guide = 'none') +
   scale_x_discrete(breaks=c("2021-11-09","2021-11-10","2021-11-11", "2021-11-12","2021-11-13","2021-11-14","2021-11-15"),
                    labels=c("1", "2", "3", "4", "5","6", "7")) +
   xlab("Experiment Day") +
   #scale_x_date(date_labels = "%b%d", date_breaks="1 day")+
   geom_vline(xintercept=1.5, 
-             linetype=2,
-             size = 1) +
+             linetype=1,
+             size = 0.4) +
   geom_vline(xintercept=4.5, 
-             linetype=2, 
-             size = 1) +
+             linetype=1, 
+             size = 0.4) +
   scale_y_continuous(expand=c(0,0)) +
-  ylab("Number of Sea Cucumbers") +
   scale_fill_manual(name="Droop Score",
                     labels=c("Mortality", "0 - Full Droop", "1 - Partial Droop", "2 - No Droop"), 
                     values = c(mortality = "#A7A8AA",
-                               "0" = "#FBEDD6",
+                               "0" = "#DA7765",
                                "1" = "#F6CBA3",
-                               "2" = "#DA7765")) +
+                               "2" = "#FBEDD6")) +
+  ylab("Number of Sea Cucumbers") +
   theme_bw() +
   theme(strip.text.y = element_text(size =12),
         panel.grid=element_blank()) +
   facet_grid(Treatment ~ .)
 
-stiffness_plot # show the plot!
+stiffness_plot
 
 ggsave("StiffnessPlot.pdf",
        stiffness_plot, 
