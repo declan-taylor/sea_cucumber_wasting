@@ -1,5 +1,8 @@
+# Libraries for data and figures.
 library(here)
 library(tidyverse)
+library(lubridate)
+# Libraries for stats only.
 library(Hmisc)
 library(ordinal)
 library(gamlss)
@@ -33,10 +36,10 @@ size <- read_csv(here("data/SizeData.csv")) %>%
     mean_weight = (Weight_g+Weight_2)/2) %>%
   dplyr::select(c(Unique_ID, mean_weight))
 
-# Using Declan's functions from the `BinaryVariables.R` script to combine individual data with lesion data 
-# This function generates our **individual level data** with death_time, spawning, 
-# evisceration, and poop data. The function exists so the dataframe can be 
-# easily made in one click.
+# Using functions from the `BinaryVariables.R` script to combine individual 
+# data with lesion data. This function generates our **individual level data** 
+# with death_time, spawning, evisceration, and poop data. The function exists 
+# so the dataframe can be easily made in one click.
 create_individualData <- function(datafile){
   # Import Data
   DailyLog <- read_csv(here(paste0("data/", datafile)), col_names = TRUE) %>%
@@ -222,7 +225,8 @@ create_individualData("DailyLog_final.csv")
 add_stressData("BehaviourData_final.csv")
 add_weightData("SizeData.csv")
 
-
+#------------------------------------------------------------------------------
+# STATS
 # adding weight data to lesion data
 individual_pooping <- IndividualData %>%
   mutate(Unique_ID = paste(bucketID, cukeID, sep="_"))%>%
@@ -278,6 +282,7 @@ str(lesion_max)
 
 #------------------------------------------------------------------------------
 # FIGURES
+
 # Total lesion count box plots
 minor_lesions <- ggplot(data = lesion_max, 
                       aes(x = Treatment, 
@@ -319,12 +324,12 @@ major_lesions <- ggplot(data = major,
 
 ggsave("MinorLesions_boxplot.pdf", 
        minor_lesions,
-       height = 4, width = 10,
+       height = 4, width = 4,
        device = "pdf",
        path = here("figures"))
 
 ggsave("MajorLesions_boxplot.pdf", 
        major_lesions,
-       height = 4, width = 10,
+       height = 4, width = 4,
        device = "pdf",
        path = here("figures"))
