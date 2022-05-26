@@ -285,42 +285,51 @@ str(lesion_max)
 
 # Total lesion count box plots
 minor_lesions <- ggplot(data = lesion_max, 
-                      aes(x = Treatment, 
-                          y = max_lesions, 
-                          fill = Treatment)) +
-  geom_boxplot(outlier.shape= NA, 
-               color="black", alpha=0.8) +
-  geom_point(alpha=0.5, position=position_dodge2(0.2), color = "black") +
+                        aes(x = Treatment, 
+                            y = max_lesions, 
+                            fill = Treatment)) +
+  geom_point(aes(colour = Treatment),
+             size = 1.5, 
+             position=position_dodge2(0.2)) +
+  geom_boxplot(outlier.shape = NA, 
+               color = "black", 
+               alpha = 0.6) +
   scale_y_continuous(expand = c(0,0), 
                      limits = c(-1,13.2))+
   scale_x_discrete(labels = c("Control", "Warm", "Heat Wave")) +
-  scale_fill_manual(values = c("Gold", "Orange","Red")) +
+  scale_fill_manual(values = c("#D0D5DD", "#E7B46C","#D2615D")) +
+  scale_color_manual(values = c("#D0D5DD", "#E7B46C","#D2615D")) +
   ylab("Total Lesions / Indiv.") +
   xlab("Treatment") +
   theme_bw() +
   theme(panel.grid=element_blank(), 
         legend.position="none")
 
+minor_lesions
+
 # Box plots but just for major lesions.
 major_lesions <- ggplot(data = major, 
                         aes(x = Treatment, 
                             y = major_lesions, 
                             fill = Treatment)) +
+  geom_point(aes(colour = Treatment),
+             size = 1.5, 
+             position=position_dodge2(0.2)) +
   geom_boxplot(outlier.shape= NA, 
-               color="black", 
-               alpha=0.8) +
-  geom_point(alpha=0.5, 
-             position=position_dodge2(0.2), 
-             color="black") +
+               color = "black", 
+               alpha = 0.8) +
   scale_y_continuous(expand=c(0,0), 
                      limits = c(-1,13.2))+
   scale_x_discrete(labels = c("Control", "Warm", "Heat Wave")) +
-  scale_fill_manual(values = c("Gold", "Orange","Red")) +
+  scale_fill_manual(values = c("#D0D5DD", "#E7B46C","#D2615D")) +
+  scale_colour_manual(values = c("#D0D5DD", "#E7B46C","#D2615D")) +
   ylab("Major Lesions / Indiv.") +
   xlab("Treatment") +
   theme_bw() +
   theme(panel.grid=element_blank(), 
         legend.position="none")
+
+major_lesions
 
 ggsave("MinorLesions_boxplot.pdf", 
        minor_lesions,
