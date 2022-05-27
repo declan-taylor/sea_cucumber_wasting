@@ -74,7 +74,7 @@ AverageTemps <- ggplot() +
                   ymax = max,
                   fill = treatment),
               alpha = 0.7) +
-  scale_fill_manual(values = c("#D0D5DD", "#E7B46C", "#D2615D")) +
+  scale_fill_manual(values = c("#D0D5DD", "#D2615D", "#E7B46C")) +
   # Small/individual lines representing each treatment.
   geom_point(data = Temp_Time,
              aes(x = date_time,
@@ -91,7 +91,7 @@ AverageTemps <- ggplot() +
                 fill = treatment),
             colour = "black",
             size = 0.8, alpha = 0.8) +
-  scale_colour_manual(values = c("#D0D5DD", "#E7B46C", "#D2615D")) +
+  scale_colour_manual(values = c("#D0D5DD", "#D2615D", "#E7B46C")) +
   scale_x_datetime(date_breaks = "1 day",
                    date_labels = c("1", "2", "3", "4", "5", "6", "7")) +
   labs(x = "Date",
