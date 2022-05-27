@@ -3,7 +3,7 @@ Code and data repository for our project testing the effects of heat stress on w
 
 **Contributing Authors:**
 
-Declan Taylor (Earth, Ocean, and Atmospheric Sciences, declanta@student.ubc.ca)
+Declan Taylor (Earth, Ocean, and Atmospheric Sciences, the University of British Columbia, declanta@student.ubc.ca)
 
 Jonathan J. Farr (Fall program student, BMSC, jfarr@ualberta.ca)
 
