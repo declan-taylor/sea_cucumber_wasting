@@ -154,9 +154,9 @@ library(tidyverse)
 theme_set(theme_classic()) # set ggplot theme
 
 # Load data
-t_n_fin <- read_csv(here("data/Em_SSTdata/2010_2020_SST_avg_data.csv"))
-t_2021 <- read_csv(here("data/Em_SSTdata/2021_SST_data.csv"))
-t_n_2021 <- read_csv(here("data/Em_SSTdata/2010_2020_SST_data.csv"))
+t_n_fin <- read_csv(here("data/SSTdata/2010_2020_SST_avg_data.csv"))
+t_2021 <- read_csv(here("data/SSTdata/2021_SST_data.csv"))
+t_n_2021 <- read_csv(here("data/SSTdata/2010_2020_SST_data.csv"))
 
 # Add date column to the t_n_2021 data frame
 t_n_fin <- t_n_fin %>%
